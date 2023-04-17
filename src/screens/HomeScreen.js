@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,
         height: SCREEN_HEIGHT,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: '#FFFFFF',
     },
     header: {
         height: parameters.headerHeight * 4,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         color: colors.darkGrey,
         fontSize: 20,
         textAlign: 'center',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     button2: {
         height: 80,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     button2Text: {
         color: 'white',
         fontSize: 30,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     button3: {
         height: 80,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginHorizontal: 10,
         padding: 10,
-        elevation: 20
+        elevation: 20,
     },
     button3Text: {
         color: colors.white,

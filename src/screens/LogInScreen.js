@@ -1,9 +1,17 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native'
 import React from 'react'
+import { colors, parameters } from '../globals/style';
+
+import cross from "../../assets/redCross.png";
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const LogInScreen = () => {
     return (
         <View style={styles.container}>
+            <View style={styles.header}>
+                <Image style={styles.img} source={cross} />
+            </View>
             <View style={styles.inputContainer}>
                 <TextInput style={styles.input} placeholder='email' />
             </View>
@@ -37,12 +45,23 @@ const LogInScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        paddingBottom: 30,
+        height: SCREEN_HEIGHT,
         backgroundColor: '#FFFFFF',
+        fontFamily: 'Inter_900Black',
+        flex: 1,
         width: '100%',
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    header: {
+        height: parameters.headerHeight * 4,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+    },
+    img: {
+        resizeMode: 'contain',
     },
     head: {
         fontSize: 30,
@@ -67,7 +86,7 @@ const styles = StyleSheet.create({
     btn: {
         width: '80%',
         height: 50,
-        backgroundColor: 'red',
+        backgroundColor: colors.red,
         color: 'white',
         borderRadius: 10,
         alignItems: 'center',
@@ -78,7 +97,8 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'white',
-        fontSize: 20
+        fontSize: 20,
+        fontFamily: 'Inter_900Black'
     },
     others: {
         marginVertical: 10

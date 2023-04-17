@@ -1,9 +1,15 @@
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions } from 'react-native'
 import React from 'react'
+import { colors, parameters } from '../globals/style';
 
+import cross from "../../assets/redCross.png";
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const RegisterScreen = () => {
     return (
         <View style={styles.container}>
+            <View style={styles.header}>
+                <Image style={styles.img} source={cross} />
+            </View>
             <View style={styles.inputContainer}>
                 <TextInput style={styles.input} placeholder='name' />
             </View>
@@ -25,7 +31,7 @@ const RegisterScreen = () => {
             </View>
 
             <View style={styles.others}>
-                <Text>Sign In with</Text>
+                <Text>Sign Up with</Text>
             </View>
 
             <View style={styles.btn2}>
@@ -39,6 +45,10 @@ const RegisterScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
+        paddingBottom: 30,
+        height: SCREEN_HEIGHT,
+        backgroundColor: '#FFFFFF',
+        fontFamily: 'Inter_900Black',
         flex: 1,
         backgroundColor: '#FFFFFF',
         width: '100%',
@@ -77,7 +87,8 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'white',
-        fontSize: 20
+        fontSize: 20,
+        fontFamily: 'Inter_900Black'
     },
     btn2: {
         width: '30%',
