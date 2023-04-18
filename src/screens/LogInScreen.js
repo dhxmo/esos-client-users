@@ -1,14 +1,16 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native'
 import React from 'react'
 import { colors, parameters } from '../globals/style';
-
 import cross from "../../assets/redCross.png";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-
-const LogInScreen = () => {
+const LogInScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
+            <View style={styles.backIcon}>
+                <Ionicons name="ios-arrow-back" size={32} color="black" onPress={() => navigation.goBack()} />
+            </View>
             <View style={styles.header}>
                 <Image style={styles.img} source={cross} />
             </View>
@@ -54,6 +56,11 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    backIcon: {
+        position: 'absolute',
+        top: 50,
+        left: 20
     },
     header: {
         height: parameters.headerHeight * 4,

@@ -1,7 +1,4 @@
-import HomeScreen from './src/screens/HomeScreen';
-import LogInScreen from './src/screens/LogInScreen';
-import MainScreen from './src/screens/MainScreen';
-import RegisterScreen from './src/screens/RegisterScreen';
+import RootNavigator from './src/navigations/RootNavigator';
 import { useFonts, Inter_900Black } from '@expo-google-fonts/inter';
 
 export default function App() {
@@ -13,10 +10,6 @@ export default function App() {
     return null;
   }
   return (
-    // <HomeScreen />
-
-    <MainScreen />
-    // <LogInScreen />
-    // <RegisterScreen />
+    <RootNavigator />
   );
 }

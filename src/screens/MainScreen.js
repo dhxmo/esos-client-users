@@ -1,31 +1,14 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
-import React, { useState, useEffect, useRef } from 'react'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, Button, Pressable } from 'react-native'
+import React from 'react'
 import cross from "../../assets/redCross.png";
 
 import { colors, parameters } from '../globals/style';
-import { mapStyle } from "../globals/mapStyle";
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import * as Location from 'expo-location';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const SUPPORT_TYPE = {
-    LOGIN: 0,
-    REGISTER: 1,
-};
 
-const HomeScreen = () => {
-    const [selected, setSelected] = useState(null);
-
-    const handleSelect = (value) => {
-        if (value === SUPPORT_TYPE.BASIC) {
-            setSelected(SUPPORT_TYPE.BASIC);
-        } else if (value === SUPPORT_TYPE.ADVANCED) {
-            setSelected(SUPPORT_TYPE.ADVANCED);
-        }
-    };
-
+const HomeScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -34,19 +17,13 @@ const HomeScreen = () => {
 
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
-                    onPress={() => handleSelect(SUPPORT_TYPE.REGISTER)}
-                    style={[
-                        styles.button1,
-                        selected === SUPPORT_TYPE.REGISTER && { backgroundColor: 'red' },
-                    ]}>
+                    onPress={() => navigation.navigate('register')}
+                    style={styles.button1}>
                     <Text style={styles.button1Text}>Register</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() => handleSelect(SUPPORT_TYPE.LOGIN)}
-                    style={[
-                        styles.button1,
-                        selected === SUPPORT_TYPE.LOGIN && { backgroundColor: 'red' },
-                    ]}>
+                    onPress={() => navigation.navigate('login')}
+                    style={styles.button1}>
                     <Text style={styles.button1Text}>Login</Text>
                 </TouchableOpacity>
             </View>
