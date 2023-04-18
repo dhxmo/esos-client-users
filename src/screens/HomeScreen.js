@@ -6,13 +6,14 @@ import { colors, parameters } from '../globals/style';
 import { mapStyle } from "../globals/mapStyle";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
+import axios from 'axios';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const SUPPORT_TYPE = {
-    BASIC: 0,
-    ADVANCED: 1,
+    BASIC: 'basic-ambulance',
+    ADVANCED: 'advanced-ambulance',
 };
 
 const HomeScreen = ({ navigation }) => {
@@ -20,17 +21,49 @@ const HomeScreen = ({ navigation }) => {
         latitude: null,
         longitude: null
     });
-    const [selected, setSelected] = useState(null);
+    const [selected, setSelected] = useState({
+        selectedType: null,
+        emergency: false
+    });
 
     const handleSelect = (value) => {
         if (value === SUPPORT_TYPE.BASIC) {
-            setSelected(SUPPORT_TYPE.BASIC);
+            setSelected({
+                selectedType: SUPPORT_TYPE.BASIC,
+                emergency: false
+            });
         } else if (value === SUPPORT_TYPE.ADVANCED) {
-            setSelected(SUPPORT_TYPE.ADVANCED);
+            setSelected({
+                selectedType: SUPPORT_TYPE.ADVANCED,
+                emergency: true
+            });
         }
     };
 
+    const handleEmergencyCall = () => {
+        if (!selected.selectedType) {
+            alert('Please select BLS or ALS');
+            return false;
+        } else {
+            const data = {
+                latitude: location.latitude,
+                longitude: location.longitude,
+                selected: selected.selectedType,
+                emergency: selected.emergency
+            };
+            axios.post('http://192.168.98.146:8080/api/requests', JSON.stringify(data), {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.data)
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+            return true;
+        }
 
+
+    };
 
     useEffect(() => {
         (async () => {
@@ -61,7 +94,7 @@ const HomeScreen = ({ navigation }) => {
                     onPress={() => handleSelect(SUPPORT_TYPE.BASIC)}
                     style={[
                         styles.button1,
-                        selected === SUPPORT_TYPE.BASIC && { backgroundColor: 'red' },
+                        selected.selectedType === SUPPORT_TYPE.BASIC && { backgroundColor: 'red' },
                     ]}>
                     <Text style={styles.button1Text}>Basic Life Support</Text>
                     <Text>Small Injuries</Text>
@@ -70,12 +103,15 @@ const HomeScreen = ({ navigation }) => {
                     onPress={() => handleSelect(SUPPORT_TYPE.ADVANCED)}
                     style={[
                         styles.button1,
-                        selected === SUPPORT_TYPE.ADVANCED && { backgroundColor: 'red' },
+                        selected.selectedType === SUPPORT_TYPE.ADVANCED && { backgroundColor: 'red' },
                     ]}>
                     <Text style={styles.button1Text}>Advanced Life Support</Text>
                     <Text>Heart Attack, Stroke</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('request')}>
+                <TouchableOpacity style={styles.button2} onPress={() => {
+                    const go = handleEmergencyCall();
+                    if (go) navigation.navigate('request')
+                }}>
                     <Text style={styles.button2Text}>Call Ambulance</Text>
                 </TouchableOpacity>
             </View>
@@ -117,7 +153,7 @@ const styles = StyleSheet.create({
     },
     map: {
         height: 250,
-        marginVertical: 0,
+        marginVertical: 10,
         width: SCREEN_WIDTH
     },
     buttonContainer: {
