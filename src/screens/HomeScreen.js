@@ -6,8 +6,6 @@ import { colors, parameters } from '../globals/style';
 import { mapStyle } from "../globals/mapStyle";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { OriginContext } from '../context/contexts';
-// import Geolocation from '@react-native-community/geolocation';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -18,9 +16,10 @@ const SUPPORT_TYPE = {
 };
 
 const HomeScreen = ({ navigation }) => {
-    const { dispatchOrigin } = useContext(OriginContext)
-
-    const [location, setLocation] = useState(null);
+    const [location, setLocation] = useState({
+        latitude: null,
+        longitude: null
+    });
     const [selected, setSelected] = useState(null);
 
     const handleSelect = (value) => {
@@ -43,20 +42,13 @@ const HomeScreen = ({ navigation }) => {
             }
 
             let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
-
-            // pass location to reducers
-            dispatchOrigin({
-                type: "ADD_ORIGIN", payload: {
-                    latitude: location.latitude,
-                    longitude: location.longitude
-                }
+            setLocation({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
             })
         })();
     }, []);
 
-
-    const _map = useRef(1);
 
     return (
         <View style={styles.container}>
@@ -88,7 +80,7 @@ const HomeScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.locationContainer}>
+            <View>
                 <MapView
                     provider={PROVIDER_GOOGLE} // remove if not using Google Maps
                     style={styles.map}
@@ -96,30 +88,16 @@ const HomeScreen = ({ navigation }) => {
                     showsUserLocation={true}
                     followsUserLocation={true}
                     region={{
-                        latitude: 20.5937,
-                        longitude: 78.9629,
-                        latitudeDelta: 25,
-                        longitudeDelta: 25,
+                        latitude: location.latitude,
+                        longitude: location.longitude,
+                        latitudeDelta: 0.01,
+                        longitudeDelta: 0.01,
                     }}
                 />
             </View>
         </View>
     )
 }
-
-// onPress = {(data, details = null)=> {
-//     dispatchOrigin({
-//         type: "ADD_ORIGIN", payload: {
-//             latitude: details.geometry.location.lat,
-//             longitude: details.geometry.location.lng,
-//             address: details.formatted_address,
-//             name: details.name
-//         }
-//     })
-
-//     setDestination(true)
-// }}
-
 
 export default HomeScreen
 
@@ -203,165 +181,4 @@ const styles = StyleSheet.create({
         height: '100%',
         resizeMode: 'contain',
     },
-
-
-    // /////////////////////////////
-    // image1: {
-
-    //     height: 100,
-    //     width: 100,
-
-    // },
-
-    // image2: {
-    //     height: 60, width: 60,
-    //     borderRadius: 30,
-    // },
-
-    // home: {
-    //     width: '100%',
-    //     height: '100%',
-    //     backgroundColor: colors.blue,
-    //     paddingLeft: 20,
-
-    // },
-
-    // text1: {
-    //     color: colors.white,
-    //     fontSize: 21,
-    //     paddingBottom: 20,
-    //     paddingTop: 20
-    // },
-
-    // text2: {
-    //     color: colors.white,
-    //     fontSize: 16
-    // },
-
-    // view1: {
-    //     flexDirection: "row",
-    //     flex: 1,
-    //     paddingTop: 30
-    // },
-
-
-    // card: {
-    //     alignItems: "center",
-    //     margin: SCREEN_WIDTH / 22
-
-    // },
-
-    // view2: {
-    //     marginBottom: 5,
-    //     borderRadius: 15,
-    //     backgroundColor: colors.grey6
-    // },
-
-    // title: {
-    //     color: colors.black,
-    //     fontSize: 16
-    // },
-    // view3: {
-    //     flexDirection: "row",
-    //     marginTop: 5,
-    //     height: 50,
-    //     backgroundColor: colors.grey6,
-    //     alignItems: "center",
-    //     justifyContent: "space-between",
-    //     marginHorizontal: 15
-
-    // },
-    // text3: {
-    //     marginLeft: 15,
-    //     fontSize: 20,
-    //     color: colors.black
-    // },
-
-    // view4: {
-    //     flexDirection: "row",
-    //     alignItems: "center",
-    //     marginRight: 15,
-    //     backgroundColor: "white",
-    //     paddingHorizontal: 10,
-    //     paddingVertical: 2,
-    //     borderRadius: 20
-    // },
-
-    // view5: {
-    //     flexDirection: "row",
-    //     alignItems: "center",
-    //     backgroundColor: "white",
-    //     paddingVertical: 25,
-    //     justifyContent: "space-between",
-    //     marginHorizontal: 15,
-    //     borderBottomColor: colors.grey4,
-    //     borderBottomWidth: 1,
-    //     flex: 1
-    // },
-
-    // view6: {
-
-
-    //     alignItems: "center",
-    //     flex: 5,
-    //     flexDirection: "row"
-    // },
-    // view7: {
-    //     backgroundColor: colors.grey6,
-    //     height: 40,
-    //     width: 40,
-    //     borderRadius: 20,
-    //     alignItems: "center",
-    //     justifyContent: "center",
-    //     marginRight: 20
-
-    // },
-
-    // map: {
-
-    //     height: 150,
-    //     marginVertical: 0,
-    //     width: SCREEN_WIDTH * 0.92
-    // },
-
-    // text4: {
-    //     fontSize: 20,
-    //     color: colors.black,
-    //     marginLeft: 20,
-    //     marginBottom: 20
-    // },
-
-    // icon1: {
-    //     marginLeft: 10,
-    //     marginTop: 5
-    // },
-
-    // view8: {
-    //     flex: 4,
-    //     marginTop: -25
-    // },
-    // carsAround: {
-    //     width: 28,
-    //     height: 14,
-
-    // },
-
-    // location: {
-    //     width: 16,
-    //     height: 16,
-    //     borderRadius: 8,
-    //     backgroundColor: colors.blue,
-    //     alignItems: "center",
-    //     justifyContent: "center"
-
-    // },
-
-    // view9: {
-    //     width: 4,
-    //     height: 4,
-    //     borderRadius: 2,
-    //     backgroundColor: "white"
-    // }
-
-
 })
