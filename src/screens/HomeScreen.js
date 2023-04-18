@@ -1,11 +1,13 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import cross from "../../assets/redCross.png";
 
 import { colors, parameters } from '../globals/style';
 import { mapStyle } from "../globals/mapStyle";
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { OriginContext } from '../context/contexts';
+// import Geolocation from '@react-native-community/geolocation';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -16,8 +18,9 @@ const SUPPORT_TYPE = {
 };
 
 const HomeScreen = ({ navigation }) => {
+    const { dispatchOrigin } = useContext(OriginContext)
+
     const [location, setLocation] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
     const [selected, setSelected] = useState(null);
 
     const handleSelect = (value) => {
@@ -27,6 +30,8 @@ const HomeScreen = ({ navigation }) => {
             setSelected(SUPPORT_TYPE.ADVANCED);
         }
     };
+
+
 
     useEffect(() => {
         (async () => {
@@ -39,8 +44,17 @@ const HomeScreen = ({ navigation }) => {
 
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location);
+
+            // pass location to reducers
+            dispatchOrigin({
+                type: "ADD_ORIGIN", payload: {
+                    latitude: location.latitude,
+                    longitude: location.longitude
+                }
+            })
         })();
     }, []);
+
 
     const _map = useRef(1);
 
@@ -92,6 +106,19 @@ const HomeScreen = ({ navigation }) => {
         </View>
     )
 }
+
+// onPress = {(data, details = null)=> {
+//     dispatchOrigin({
+//         type: "ADD_ORIGIN", payload: {
+//             latitude: details.geometry.location.lat,
+//             longitude: details.geometry.location.lng,
+//             address: details.formatted_address,
+//             name: details.name
+//         }
+//     })
+
+//     setDestination(true)
+// }}
 
 
 export default HomeScreen
