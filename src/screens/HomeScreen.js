@@ -15,7 +15,7 @@ const SUPPORT_TYPE = {
     ADVANCED: 1,
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [selected, setSelected] = useState(null);
@@ -69,7 +69,7 @@ const HomeScreen = () => {
                     <Text style={styles.button1Text}>Advanced Life Support</Text>
                     <Text>Heart Attack, Stroke</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button2}>
+                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('request')}>
                     <Text style={styles.button2Text}>Call Ambulance</Text>
                 </TouchableOpacity>
             </View>

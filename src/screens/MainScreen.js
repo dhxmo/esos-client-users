@@ -8,7 +8,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-const HomeScreen = ({ navigation }) => {
+const MainScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -32,7 +32,7 @@ const HomeScreen = ({ navigation }) => {
 }
 
 
-export default HomeScreen
+export default MainScreen
 
 const styles = StyleSheet.create({
     container: {
