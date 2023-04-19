@@ -23,7 +23,7 @@ const LogInScreen = ({ navigation }) => {
 
             {/* TODO --- add google auth and persist user state */}
             <View style={styles.btn}>
-                <TouchableOpacity onPress={() => navigation.navigate('home')}>
+                <TouchableOpacity onPress={() => navigation.navigate('location')}>
                     <Text style={styles.text}>Log In</Text>
                 </TouchableOpacity>
             </View>

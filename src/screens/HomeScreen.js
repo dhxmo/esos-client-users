@@ -1,26 +1,24 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState } from 'react'
 import cross from "../../assets/redCross.png";
 
 import { colors, parameters } from '../globals/style';
-import { mapStyle } from "../globals/mapStyle";
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import * as Location from 'expo-location';
+// import { mapStyle } from "../globals/mapStyle";
+// import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+// import * as Location from 'expo-location';
 import axios from 'axios';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const SUPPORT_TYPE = {
-    BASIC: 'basic-ambulance',
-    ADVANCED: 'advanced-ambulance',
+    BASIC: 'basic',
+    ADVANCED: 'advanced',
 };
 
-const HomeScreen = ({ navigation }) => {
-    const [location, setLocation] = useState({
-        latitude: null,
-        longitude: null
-    });
+const HomeScreen = ({ navigation, route }) => {
+    const { location } = route.params;
+
     const [selected, setSelected] = useState({
         selectedType: null,
         emergency: false
@@ -65,24 +63,6 @@ const HomeScreen = ({ navigation }) => {
 
     };
 
-    useEffect(() => {
-        (async () => {
-
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
-            }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude
-            })
-        })();
-    }, []);
-
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -110,26 +90,10 @@ const HomeScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button2} onPress={() => {
                     const go = handleEmergencyCall();
-                    if (go) navigation.navigate('request')
+                    if (go) navigation.navigate('track-ambulance')
                 }}>
                     <Text style={styles.button2Text}>Call Ambulance</Text>
                 </TouchableOpacity>
-            </View>
-
-            <View>
-                <MapView
-                    provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-                    style={styles.map}
-                    customMapStyle={mapStyle}
-                    showsUserLocation={true}
-                    followsUserLocation={true}
-                    region={{
-                        latitude: location.latitude,
-                        longitude: location.longitude,
-                        latitudeDelta: 0.01,
-                        longitudeDelta: 0.01,
-                    }}
-                />
             </View>
         </View>
     )

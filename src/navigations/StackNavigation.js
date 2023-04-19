@@ -3,8 +3,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainScreen from "../screens/MainScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import LoginScreen from "../screens/LogInScreen";
-import RequestScreen from '../screens/RequestScreen';
+import LocationScreen from '../screens/LocationScreen';
 import HomeScreen from '../screens/HomeScreen';
+import TrackAmbulanceScreen from '../screens/TrackAmbulanceScreen';
 
 const Main = createNativeStackNavigator();
 
@@ -27,13 +28,18 @@ export function MainStack() {
                 options={{ headerShown: false }}
             />
             <Main.Screen
+                name="location"
+                component={LocationScreen}
+                options={{ headerShown: false }}
+            />
+            <Main.Screen
                 name="home"
                 component={HomeScreen}
                 options={{ headerShown: false }}
             />
             <Main.Screen
-                name="request"
-                component={RequestScreen}
+                name="track-ambulance"
+                component={TrackAmbulanceScreen}
                 options={{ headerShown: false }}
             />
         </Main.Navigator>
