@@ -1,8 +1,8 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import cross from "../../assets/redCross.png";
 
-import { colors, parameters } from '../globals/style';
+import { SCREEN_HEIGHT, SCREEN_WIDTH, colors, parameters } from '../globals/style';
 import axios from 'axios';
 
 // require('react-native-dotenv').config();
@@ -96,8 +96,6 @@ const HomeScreen = ({ navigation, route }) => {
 
 export default HomeScreen
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,

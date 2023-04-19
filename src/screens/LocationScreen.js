@@ -1,9 +1,9 @@
-import { View, StyleSheet, Dimensions, TouchableOpacity, Text, Avatar, Icon } from 'react-native'
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { colors } from '../globals/style';
+import { SCREEN_HEIGHT, SCREEN_WIDTH, colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
 
@@ -66,9 +66,6 @@ const LocationScreen = ({ navigation }) => {
 }
 
 export default LocationScreen
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
     container: {
