@@ -2,14 +2,13 @@ import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions,
 import React from 'react'
 
 import cross from "../../assets/redCross.png";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 const RegisterScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.backIcon}>
-                <Ionicons name="ios-arrow-back" size={32} color="black" onPress={() => navigation.goBack()} />
+                <Ionicons name="arrow-back-outline" size={24} color="black" onPress={() => navigation.goBack()} />
             </View>
             <View style={styles.header}>
                 <Image style={styles.img} source={cross} />
@@ -47,6 +46,7 @@ const RegisterScreen = ({ navigation }) => {
     )
 }
 
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,

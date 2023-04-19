@@ -2,13 +2,13 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Dimensions 
 import React from 'react'
 import { colors, parameters } from '../globals/style';
 import cross from "../../assets/redCross.png";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 const LogInScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.backIcon}>
-                <Ionicons name="ios-arrow-back" size={32} color="black" onPress={() => navigation.goBack()} />
+                <Ionicons name="arrow-back-outline" size={24} color="black" />
             </View>
             <View style={styles.header}>
                 <Image style={styles.img} source={cross} />

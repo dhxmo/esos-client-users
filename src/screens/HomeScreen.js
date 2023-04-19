@@ -6,7 +6,6 @@ import { colors, parameters } from '../globals/style';
 import axios from 'axios';
 
 
-
 const SUPPORT_TYPE = {
     BASIC: 'basic',
     ADVANCED: 'advanced',

@@ -1,11 +1,15 @@
-import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native'
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text, Avatar, Icon } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import Ionicons from '@expo/vector-icons/Ionicons';
+// import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
+import { Entypo } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+
+const userAsset = require('../../assets/user.jpg');
 
 const LocationScreen = ({ navigation }) => {
     const [location, setLocation] = useState({
@@ -35,7 +39,7 @@ const LocationScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.backIcon}>
-                <Ionicons name="ios-arrow-back" size={32} color="black" onPress={() => navigation.goBack()} />
+                <Ionicons name="arrow-back-outline" size={24} color="black" onPress={() => navigation.goBack()} />
             </View>
             <View>
                 <MapView
@@ -57,6 +61,7 @@ const LocationScreen = ({ navigation }) => {
                 style={[
                     styles.button1
                 ]}>
+                <Ionicons name="rocket" size={30} color="#900" />
                 <Text style={styles.button1Text}>Confirm Location</Text>
             </TouchableOpacity>
         </View>
@@ -103,5 +108,56 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center',
         fontWeight: 'bold',
+    },
+    view3: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 2,
+        marginBottom: 10,
+        backgroundColor: colors.white,
+        //height:30,
+        zIndex: 10,
+
+
+    },
+    view4: {
+        flexDirection: "row",
+        alignItems: "center",
+
+    },
+    view5: {
+        backgroundColor: colors.grey7,
+        width: SCREEN_WIDTH * 0.70,
+        height: 40,
+        justifyContent: "center",
+        marginTop: 10,
+
+    },
+    view6: {
+        backgroundColor: colors.grey6,
+        width: SCREEN_WIDTH * 0.70,
+        height: 40,
+        justifyContent: "center",
+        marginTop: 10,
+        paddingLeft: 0
+    },
+    text1: {
+        marginLeft: 10,
+        fontSize: 16,
+        color: colors.grey1
+    },
+
+    image1: {
+        height: 70,
+        width: 30,
+        marginRight: 10,
+        marginTop: 10
+    },
+    view7: {
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    view8: {
+        marginLeft: 10
     },
 })
