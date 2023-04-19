@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
         height: SCREEN_HEIGHT,
         backgroundColor: '#FFFFFF',
-        fontFamily: 'Inter_900Black',
+        // fontFamily: 'Inter_900Black',
         flex: 1,
         backgroundColor: '#FFFFFF',
         width: '100%',
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     text: {
         color: 'white',
         fontSize: 20,
-        fontFamily: 'Inter_900Black'
+        // fontFamily: 'Inter_900Black'
     },
     btn2: {
         width: '30%',

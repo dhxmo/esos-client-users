@@ -4,7 +4,6 @@ import { colors, parameters } from '../globals/style';
 import cross from "../../assets/redCross.png";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 const LogInScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
@@ -46,12 +45,13 @@ const LogInScreen = ({ navigation }) => {
     )
 }
 
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,
         height: SCREEN_HEIGHT,
         backgroundColor: '#FFFFFF',
-        fontFamily: 'Inter_900Black',
+        // fontFamily: 'Inter_900Black',
         flex: 1,
         width: '100%',
         height: '100%',
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     text: {
         color: 'white',
         fontSize: 20,
-        fontFamily: 'Inter_900Black'
+        // fontFamily: 'Inter_900Black'
     },
     others: {
         marginVertical: 10

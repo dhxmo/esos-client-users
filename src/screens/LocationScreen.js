@@ -1,9 +1,9 @@
-import { View, StyleSheet, Dimensions } from 'react-native'
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import MapComponent from '../components/MapComponent'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
 
@@ -30,6 +30,8 @@ const LocationScreen = ({ navigation }) => {
         })();
     }, []);
 
+    // TODO: add support for own or other location 
+    // if pick other, update location to that specific geolocation lat/long
     return (
         <View style={styles.container}>
             <View style={styles.backIcon}>
@@ -51,7 +53,7 @@ const LocationScreen = ({ navigation }) => {
                 />
             </View>
             <TouchableOpacity
-                onPress={navigation.navigate('home', { location })}
+                onPress={() => { navigation.navigate('home', { location }) }}
                 style={[
                     styles.button1
                 ]}>
@@ -63,12 +65,15 @@ const LocationScreen = ({ navigation }) => {
 
 export default LocationScreen
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,
         height: SCREEN_HEIGHT,
         backgroundColor: '#FFFFFF',
+        alignItems: 'center'
     },
     backIcon: {
         position: 'absolute',
@@ -76,8 +81,27 @@ const styles = StyleSheet.create({
         left: 20
     },
     map: {
-        height: 250,
+        height: 750,
         marginVertical: 10,
         width: SCREEN_WIDTH
+    },
+    button1: {
+        height: 80,
+        width: 240,
+        backgroundColor: colors.white,
+        borderRadius: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: 'center',
+        marginHorizontal: 10,
+        marginBottom: 30,
+        padding: 10,
+        elevation: 20
+    },
+    button1Text: {
+        color: colors.darkGrey,
+        fontSize: 20,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
 })

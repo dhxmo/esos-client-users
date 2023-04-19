@@ -3,13 +3,9 @@ import React, { useState } from 'react'
 import cross from "../../assets/redCross.png";
 
 import { colors, parameters } from '../globals/style';
-// import { mapStyle } from "../globals/mapStyle";
-// import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-// import * as Location from 'expo-location';
 import axios from 'axios';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 
 const SUPPORT_TYPE = {
     BASIC: 'basic',
@@ -90,7 +86,7 @@ const HomeScreen = ({ navigation, route }) => {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button2} onPress={() => {
                     const go = handleEmergencyCall();
-                    if (go) navigation.navigate('track-ambulance')
+                    if (go) navigation.navigate('track-ambulance', { location })
                 }}>
                     <Text style={styles.button2Text}>Call Ambulance</Text>
                 </TouchableOpacity>
@@ -101,6 +97,8 @@ const HomeScreen = ({ navigation, route }) => {
 
 export default HomeScreen
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,
