@@ -5,7 +5,7 @@ import cross from "../../assets/redCross.png";
 import { colors, parameters } from '../globals/style';
 import axios from 'axios';
 
-
+// require('react-native-dotenv').config();
 const SUPPORT_TYPE = {
     BASIC: 'basic',
     ADVANCED: 'advanced',
@@ -44,7 +44,7 @@ const HomeScreen = ({ navigation, route }) => {
                 selected: selected.selectedType,
                 emergency: selected.emergency
             };
-            axios.post('http://192.168.98.146:8080/api/requests', JSON.stringify(data), {
+            axios.post(`${BACKEND_SERVER_IP}/api/requests`, JSON.stringify(data), {
                 headers: {
                     'Content-Type': 'application/json'
                 }

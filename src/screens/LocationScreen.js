@@ -1,15 +1,13 @@
 import { View, StyleSheet, Dimensions, TouchableOpacity, Text, Avatar, Icon } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-// import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
-import { Entypo } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 
-const userAsset = require('../../assets/user.jpg');
+// const userAsset = require('../../assets/user.jpg');
 
 const LocationScreen = ({ navigation }) => {
     const [location, setLocation] = useState({
@@ -61,7 +59,6 @@ const LocationScreen = ({ navigation }) => {
                 style={[
                     styles.button1
                 ]}>
-                <Ionicons name="rocket" size={30} color="#900" />
                 <Text style={styles.button1Text}>Confirm Location</Text>
             </TouchableOpacity>
         </View>

@@ -6,7 +6,6 @@ import LoginScreen from "../screens/LogInScreen";
 import LocationScreen from '../screens/LocationScreen';
 import HomeScreen from '../screens/HomeScreen';
 import TrackAmbulanceScreen from '../screens/TrackAmbulanceScreen';
-import QeuryLocationScreen from '../screens/QeuryLocationScreen';
 
 const Main = createNativeStackNavigator();
 
