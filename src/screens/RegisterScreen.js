@@ -1,30 +1,97 @@
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 
 import cross from "../../assets/redCross.png";
 import { Ionicons } from '@expo/vector-icons';
 import { inputContainer, btn, btn2 } from '../globals/style';
+import axios from 'axios';
+import { BACKEND_SERVER_IP } from '@env'
 
 const RegisterScreen = ({ navigation }) => {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+
+
+    const validateEmail = (email) => {
+        return /\S+@\S+\.\S+/.test(email);
+    };
+
+    const validatePasswordStrength = (password) => {
+        const hasNumber = /\d/;
+        const hasLowercase = /[a-z]/;
+
+        const isValidLength = password.length >= 5;
+        const hasValidNumber = hasNumber.test(password);
+        const hasValidLowercase = hasLowercase.test(password);
+        return (
+            isValidLength &&
+            hasValidNumber &&
+            hasValidLowercase
+        );
+    };
+
+    const validatePhoneNumber = (phoneNumber) => {
+        const re = /^\d{10}$/;
+        return re.test(phoneNumber);
+    };
+
+
+    const handleRegister = () => {
+        if (!validateEmail(email)) {
+            alert('Please enter a valid email address!');
+            return;
+        }
+
+        if (!validatePasswordStrength(password)) {
+            alert('Please enter a strong password!');
+            return;
+        }
+
+        if (!validatePhoneNumber(phoneNumber)) {
+            alert('Please enter a valid phone number!');
+            return;
+        }
+
+        const data = {
+            email,
+            password,
+            phoneNumber,
+        };
+
+        // Send data to server endpoint
+        axios.post(`${BACKEND_SERVER_IP}/api/user/register`, JSON.stringify(data), {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then(response => response.data)
+            .then(data => console.log(data))
+            .catch(error => console.error(error));
+    }
     return (
+
         <View style={styles.container}>
             <View style={styles.backIcon}>
                 <Ionicons name="arrow-back-outline" size={24} color="black" onPress={() => navigation.goBack()} />
             </View>
-            <View style={styles.header}>
+            <View>
                 <Image source={cross} />
             </View>
             <View style={inputContainer}>
-                <TextInput style={styles.input} placeholder='email' />
+                <TextInput style={styles.input} value={email}
+                    onChangeText={setEmail} placeholder='email' />
             </View>
             <View style={inputContainer}>
-                <TextInput style={styles.input} placeholder='password' />
+                <TextInput style={styles.input} value={password} secureTextEntry={true} onChangeText={setPassword} placeholder='password' />
             </View>
             <View style={inputContainer}>
-                <TextInput style={styles.input} placeholder='phone number' />
+                <TextInput style={styles.input} value={phoneNumber}
+                    onChangeText={setPhoneNumber}
+                    placeholder='phone number' />
             </View>
             <View style={btn}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => handleRegister()}>
                     <Text style={styles.text}>Register</Text>
                 </TouchableOpacity>
             </View>

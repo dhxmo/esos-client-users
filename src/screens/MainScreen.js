@@ -12,6 +12,10 @@ const MainScreen = ({ navigation }) => {
                 <Image style={styles.img} source={cross} />
             </View>
 
+            <View style={styles.title}>
+                <Text style={styles.titleText}>esos</Text>
+            </View>
+
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
                     onPress={() => navigation.navigate('register')}
@@ -40,6 +44,14 @@ const styles = StyleSheet.create({
         height: SCREEN_HEIGHT,
         backgroundColor: '#FFFFFF',
     },
+    title: {
+        alignItems: 'center',
+        marginTop: 40
+    },
+    titleText: {
+        fontWeight: 'bold',
+        fontSize: 15
+    },
     header: {
         height: parameters.headerHeight * 4,
         borderBottomLeftRadius: 20,
@@ -57,7 +69,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 70
+        marginTop: 40
     },
     button1: {
         height: 80,

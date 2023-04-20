@@ -1,17 +1,8 @@
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 
+const redTheme = "#BE0000";
+
 module.exports = {
-    // btn: {
-    //     width: '80%',
-    //     height: 50,
-    //     backgroundColor: 'white',
-    //     borderRadius: 10,
-    //     alignItems: 'center',
-    //     justifyContent: 'center',
-    //     elevation: 10,
-    //     margin: 10,
-    //     marginBottom: 80,
-    // },
     hr80: {
         width: '80%',
         borderBottomColor: '#000000',
@@ -39,7 +30,7 @@ module.exports = {
         white: "#ffffff",
         darkBlue: "#2d328a",
         pagebackground: "white",
-        red: "#fe0000"
+        red: redTheme
     },
     parameters: {
         statusBarHeight: getStatusBarHeight(),
@@ -76,7 +67,7 @@ module.exports = {
         width: '70%',
         marginVertical: 20,
         paddingHorizontal: 10,
-        paddingVertical: 10,
+        paddingVertical: 15,
         borderRadius: 20,
         backgroundColor: 'white',
         borderColor: 'grey',
@@ -85,7 +76,7 @@ module.exports = {
     btn: {
         width: '60%',
         height: 70,
-        backgroundColor: 'red',
+        backgroundColor: redTheme,
         color: 'white',
         borderRadius: 20,
         alignItems: 'center',
@@ -103,7 +94,7 @@ module.exports = {
     btn2: {
         width: '30%',
         height: 50,
-        backgroundColor: 'red',
+        backgroundColor: redTheme,
         color: 'white',
         borderRadius: 20,
         alignItems: 'center',

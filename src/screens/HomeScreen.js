@@ -5,7 +5,6 @@ import cross from "../../assets/redCross.png";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, parameters } from '../globals/style';
 import axios from 'axios';
-import { btn } from '../globals/style';
 
 // require('react-native-dotenv').config();
 const SUPPORT_TYPE = {
@@ -35,7 +34,7 @@ const HomeScreen = ({ navigation, route }) => {
         }
     };
 
-    const handleEmergencyCall = () => {
+    const handleEmergencyCall = async () => {
         if (!selected.selectedType) {
             alert('Please select BLS or ALS');
             return false;
@@ -46,7 +45,7 @@ const HomeScreen = ({ navigation, route }) => {
                 selected: selected.selectedType,
                 emergency: selected.emergency
             };
-            axios.post(`${process.env.BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
+            await axios.post(`${process.env.BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -195,7 +194,7 @@ const styles = StyleSheet.create({
     btn: {
         width: '60%',
         height: 70,
-        backgroundColor: 'red',
+        backgroundColor: colors.red,
         color: 'white',
         borderRadius: 20,
         alignItems: 'center',

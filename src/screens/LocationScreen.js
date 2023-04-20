@@ -2,12 +2,13 @@ import { View, StyleSheet, Dimensions, TouchableOpacity, Text, Modal } from 'rea
 import React, { useEffect, useRef, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Ionicons from '@expo/vector-icons/Ionicons';
-// import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
 import { btn, btn2 } from '../globals/style';
+import { GOOGLE_MAPS_API } from '@env';
 
 navigator.geolocation = require('react-native-geolocation-service');
 
@@ -85,9 +86,9 @@ const LocationScreen = ({ navigation }) => {
                             enablePoweredByContainer={false}
                             fetchDetails={true}
                             autoFocus={true}
-                            ref={textInput2}
+                            // ref={textInput2}
                             query={{
-                                key: process.env.GOOGLE_MAPS_API,
+                                key: GOOGLE_MAPS_API,
                                 language: 'en',
                             }}
                             styles={autoComplete}
