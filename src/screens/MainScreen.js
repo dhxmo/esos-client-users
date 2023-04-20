@@ -1,8 +1,8 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
 import React from 'react'
 import cross from "../../assets/redCross.png";
 
-import { colors, parameters, SCREEN_WIDTH, SCREEN_HEIGHT } from '../globals/style';
+import { colors, parameters } from '../globals/style';
 
 
 const MainScreen = ({ navigation }) => {
@@ -30,6 +30,9 @@ const MainScreen = ({ navigation }) => {
 
 
 export default MainScreen
+
+export const SCREEN_WIDTH = Dimensions.get('window').width;
+export const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
     container: {

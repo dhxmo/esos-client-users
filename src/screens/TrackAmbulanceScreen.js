@@ -1,8 +1,7 @@
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { mapStyle } from '../globals/mapStyle';
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../globals/style';
 
 
 const TrackAmbulanceScreen = ({ route }) => {
@@ -55,6 +54,9 @@ const TrackAmbulanceScreen = ({ route }) => {
 }
 
 export default TrackAmbulanceScreen
+
+export const SCREEN_WIDTH = Dimensions.get('window').width;
+export const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
     container: {

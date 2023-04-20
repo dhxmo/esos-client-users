@@ -1,8 +1,9 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
 import React, { useState } from 'react'
 import cross from "../../assets/redCross.png";
 
-import { SCREEN_HEIGHT, SCREEN_WIDTH, colors, parameters } from '../globals/style';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { colors, parameters } from '../globals/style';
 import axios from 'axios';
 
 // require('react-native-dotenv').config();
@@ -44,7 +45,7 @@ const HomeScreen = ({ navigation, route }) => {
                 selected: selected.selectedType,
                 emergency: selected.emergency
             };
-            axios.post(`${BACKEND_SERVER_IP}/api/requests`, JSON.stringify(data), {
+            axios.post(`${process.env.BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -60,6 +61,9 @@ const HomeScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
+            <View style={styles.backIcon}>
+                <Ionicons name="arrow-back-outline" size={24} color="black" onPress={() => navigation.goBack()} />
+            </View>
             <View style={styles.header}>
                 <Image style={styles.img} source={cross} />
             </View>
@@ -96,6 +100,9 @@ const HomeScreen = ({ navigation, route }) => {
 
 export default HomeScreen
 
+export const SCREEN_WIDTH = Dimensions.get('window').width;
+export const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,
@@ -109,6 +116,12 @@ const styles = StyleSheet.create({
     },
     locationContainer: {
         marginTop: 20
+    },
+    backIcon: {
+        position: 'absolute',
+        top: 50,
+        left: 20,
+        zIndex: 100
     },
     map: {
         height: 250,

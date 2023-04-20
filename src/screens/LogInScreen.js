@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native'
 import React from 'react'
-import { SCREEN_HEIGHT, colors, parameters } from '../globals/style';
+import { colors, parameters } from '../globals/style';
 import cross from "../../assets/redCross.png";
 import { Ionicons } from '@expo/vector-icons';
 
@@ -45,6 +45,9 @@ const LogInScreen = ({ navigation }) => {
     )
 }
 
+export const SCREEN_WIDTH = Dimensions.get('window').width;
+export const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,
@@ -60,7 +63,8 @@ const styles = StyleSheet.create({
     backIcon: {
         position: 'absolute',
         top: 50,
-        left: 20
+        left: 20,
+        zIndex: 100
     },
     header: {
         height: parameters.headerHeight * 4,
@@ -69,6 +73,7 @@ const styles = StyleSheet.create({
     },
     img: {
         resizeMode: 'contain',
+        zIndex: -1
     },
     head: {
         fontSize: 30,

@@ -3,7 +3,6 @@ import React from 'react'
 
 import cross from "../../assets/redCross.png";
 import { Ionicons } from '@expo/vector-icons';
-import { SCREEN_HEIGHT } from '../globals/style';
 
 const RegisterScreen = ({ navigation }) => {
     return (
@@ -47,6 +46,9 @@ const RegisterScreen = ({ navigation }) => {
     )
 }
 
+export const SCREEN_WIDTH = Dimensions.get('window').width;
+export const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
     container: {
         paddingBottom: 30,
@@ -63,7 +65,8 @@ const styles = StyleSheet.create({
     backIcon: {
         position: 'absolute',
         top: 50,
-        left: 20
+        left: 20,
+        zIndex: 100
     },
     head: {
         fontSize: 30,
