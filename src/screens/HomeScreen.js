@@ -5,6 +5,7 @@ import cross from "../../assets/redCross.png";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, parameters } from '../globals/style';
 import axios from 'axios';
+import { btn } from '../globals/style';
 
 // require('react-native-dotenv').config();
 const SUPPORT_TYPE = {
@@ -77,6 +78,7 @@ const HomeScreen = ({ navigation, route }) => {
                     ]}>
                     <Text style={styles.button1Text}>Basic Life Support</Text>
                     <Text>Small Injuries</Text>
+                    <Text>₹1500</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => handleSelect(SUPPORT_TYPE.ADVANCED)}
@@ -86,8 +88,9 @@ const HomeScreen = ({ navigation, route }) => {
                     ]}>
                     <Text style={styles.button1Text}>Advanced Life Support</Text>
                     <Text>Heart Attack, Stroke</Text>
+                    <Text>₹3000</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button2} onPress={() => {
+                <TouchableOpacity style={styles.btn} onPress={() => {
                     const go = handleEmergencyCall();
                     if (go) navigation.navigate('track-ambulance', { location })
                 }}>
@@ -137,12 +140,12 @@ const styles = StyleSheet.create({
         height: 80,
         width: 240,
         backgroundColor: colors.white,
-        borderRadius: 10,
+        borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
         textAlign: 'center',
         marginHorizontal: 10,
-        marginTop: 30,
+        marginTop: 60,
         padding: 10,
         elevation: 20
     },
@@ -167,7 +170,7 @@ const styles = StyleSheet.create({
     },
     button2Text: {
         color: 'white',
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
     },
     button3: {
@@ -188,5 +191,19 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         resizeMode: 'contain',
+    },
+    btn: {
+        width: '60%',
+        height: 70,
+        backgroundColor: 'red',
+        color: 'white',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 10,
+        margin: 10,
+        marginVertical: 40,
+        padding: 20,
+        marginTop: 60
     },
 })

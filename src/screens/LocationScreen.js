@@ -7,6 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
+import { btn, btn2 } from '../globals/style';
 
 navigator.geolocation = require('react-native-geolocation-service');
 
@@ -99,7 +100,7 @@ const LocationScreen = ({ navigation }) => {
                     onPress={() => {
                         navigation.navigate('home', { location });
                     }}
-                    style={[styles.button1]}>
+                    style={[btn]}>
                     <Text style={styles.button1Text}>Confirm Location</Text>
                 </TouchableOpacity>
             </View>
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
 
     dropdownButton: {
         backgroundColor: '#FFFFFF',
-        borderRadius: 5,
+        borderRadius: 20,
         borderWidth: 1,
         borderColor: '#d3d3d3',
         paddingHorizontal: 12,

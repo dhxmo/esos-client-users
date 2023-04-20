@@ -1,17 +1,17 @@
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 
 module.exports = {
-    btn: {
-        width: '80%',
-        height: 50,
-        backgroundColor: 'white',
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 10,
-        margin: 10,
-        marginBottom: 80,
-    },
+    // btn: {
+    //     width: '80%',
+    //     height: 50,
+    //     backgroundColor: 'white',
+    //     borderRadius: 10,
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     elevation: 10,
+    //     margin: 10,
+    //     marginBottom: 80,
+    // },
     hr80: {
         width: '80%',
         borderBottomColor: '#000000',
@@ -70,5 +70,46 @@ module.exports = {
         color: "#ff8c52",
         fontSize: 20,
         fontWeight: "bold"
-    }
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        width: '70%',
+        marginVertical: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        borderRadius: 20,
+        backgroundColor: 'white',
+        borderColor: 'grey',
+        elevation: 10
+    },
+    btn: {
+        width: '60%',
+        height: 70,
+        backgroundColor: 'red',
+        color: 'white',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 10,
+        margin: 10,
+        marginVertical: 40,
+        padding: 20
+    },
+    text: {
+        color: 'white',
+        fontSize: 20,
+        // fontFamily: 'Inter_900Black'
+    },
+    btn2: {
+        width: '30%',
+        height: 50,
+        backgroundColor: 'red',
+        color: 'white',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 10,
+        margin: 10,
+        marginTop: 20
+    },
 }

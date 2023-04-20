@@ -3,6 +3,7 @@ import React from 'react'
 
 import cross from "../../assets/redCross.png";
 import { Ionicons } from '@expo/vector-icons';
+import { inputContainer, btn, btn2 } from '../globals/style';
 
 const RegisterScreen = ({ navigation }) => {
     return (
@@ -11,19 +12,18 @@ const RegisterScreen = ({ navigation }) => {
                 <Ionicons name="arrow-back-outline" size={24} color="black" onPress={() => navigation.goBack()} />
             </View>
             <View style={styles.header}>
-                <Image style={styles.img} source={cross} />
+                <Image source={cross} />
             </View>
-            <View style={styles.inputContainer}>
-                <TextInput style={styles.input} placeholder='name' />
-            </View>
-            <View style={styles.inputContainer}>
+            <View style={inputContainer}>
                 <TextInput style={styles.input} placeholder='email' />
             </View>
-            <View style={styles.inputContainer}>
+            <View style={inputContainer}>
                 <TextInput style={styles.input} placeholder='password' />
             </View>
-
-            <View style={styles.btn}>
+            <View style={inputContainer}>
+                <TextInput style={styles.input} placeholder='phone number' />
+            </View>
+            <View style={btn}>
                 <TouchableOpacity>
                     <Text style={styles.text}>Register</Text>
                 </TouchableOpacity>
@@ -37,7 +37,7 @@ const RegisterScreen = ({ navigation }) => {
                 <Text>Sign Up with</Text>
             </View>
 
-            <View style={styles.btn2}>
+            <View style={btn2}>
                 <TouchableOpacity>
                     <Text style={styles.text}>Gmail</Text>
                 </TouchableOpacity>
@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
         height: SCREEN_HEIGHT,
         backgroundColor: '#FFFFFF',
-        // fontFamily: 'Inter_900Black',
         flex: 1,
         backgroundColor: '#FFFFFF',
         width: '100%',
@@ -74,46 +73,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 50
     },
-    inputContainer: {
-        flexDirection: 'row',
-        width: '80%',
-        marginVertical: 20,
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        borderRadius: 10,
-        backgroundColor: 'white',
-        borderColor: 'grey',
-        elevation: 10
-    },
-    btn: {
-        width: '80%',
-        height: 50,
-        backgroundColor: 'red',
-        color: 'white',
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 10,
-        margin: 10,
-        marginVertical: 40,
-    },
     text: {
         color: 'white',
         fontSize: 20,
         // fontFamily: 'Inter_900Black'
     },
-    btn2: {
-        width: '30%',
-        height: 50,
-        backgroundColor: 'red',
-        color: 'white',
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 10,
-        margin: 10,
-    },
-
-
 })
 export default RegisterScreen

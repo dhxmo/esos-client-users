@@ -3,6 +3,7 @@ import React from 'react'
 import { colors, parameters } from '../globals/style';
 import cross from "../../assets/redCross.png";
 import { Ionicons } from '@expo/vector-icons';
+import { inputContainer, btn, btn2 } from '../globals/style';
 
 const LogInScreen = ({ navigation }) => {
     return (
@@ -13,15 +14,15 @@ const LogInScreen = ({ navigation }) => {
             <View style={styles.header}>
                 <Image style={styles.img} source={cross} />
             </View>
-            <View style={styles.inputContainer}>
+            <View style={inputContainer}>
                 <TextInput style={styles.input} placeholder='email' />
             </View>
-            <View style={styles.inputContainer}>
+            <View style={inputContainer}>
                 <TextInput secureTextEntry style={styles.input} placeholder='password' />
             </View>
 
             {/* TODO --- add google auth and persist user state */}
-            <View style={styles.btn}>
+            <View style={btn}>
                 <TouchableOpacity onPress={() => navigation.navigate('location')}>
                     <Text style={styles.text}>Log In</Text>
                 </TouchableOpacity>
@@ -34,7 +35,7 @@ const LogInScreen = ({ navigation }) => {
                 <Text>Sign In with</Text>
             </View>
 
-            <View style={styles.btn2}>
+            <View style={btn2}>
                 <TouchableOpacity>
                     <Text style={styles.text}>Gmail</Text>
                 </TouchableOpacity>
@@ -81,31 +82,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 50
     },
-    inputContainer: {
-        flexDirection: 'row',
-        width: '80%',
-        marginVertical: 20,
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        borderRadius: 10,
-        backgroundColor: 'white',
-        borderColor: 'grey',
-        elevation: 10
-    },
     input: {
         color: 'grey'
-    },
-    btn: {
-        width: '80%',
-        height: 50,
-        backgroundColor: colors.red,
-        color: 'white',
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 10,
-        margin: 10,
-        marginVertical: 40,
     },
     text: {
         color: 'white',
@@ -115,18 +93,5 @@ const styles = StyleSheet.create({
     others: {
         marginVertical: 10
     },
-    btn2: {
-        width: '30%',
-        height: 50,
-        backgroundColor: 'red',
-        color: 'white',
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 10,
-        margin: 10,
-    },
-
-
 })
 export default LogInScreen

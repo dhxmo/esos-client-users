@@ -63,14 +63,14 @@ const styles = StyleSheet.create({
         height: 80,
         width: 240,
         backgroundColor: colors.white,
-        borderRadius: 10,
+        borderRadius: 30,
         alignItems: "center",
         justifyContent: "center",
         textAlign: 'center',
         marginHorizontal: 10,
-        marginTop: 50,
+        marginTop: 60,
         padding: 10,
-        elevation: 20
+        elevation: 15
     },
     button1Text: {
         color: colors.darkGrey,
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     img: {
         width: '100%',
         height: '100%',
+        marginTop: 50,
         resizeMode: 'contain',
     },
 })
