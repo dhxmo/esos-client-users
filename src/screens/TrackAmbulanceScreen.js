@@ -27,6 +27,8 @@ const TrackAmbulanceScreen = ({ route }) => {
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                 }}
+
+            // TODO: Once ambulance found, update of gps location here
             >
                 {/* {ambulanceLocation && (
                     <MapView.Marker
@@ -49,6 +51,8 @@ const TrackAmbulanceScreen = ({ route }) => {
                     />
                 )} */}
             </MapView>
+
+            {/* TODO: container here to record audio and send to paramedic  */}
         </View>
     );
 }

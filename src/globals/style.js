@@ -73,6 +73,29 @@ module.exports = {
         borderColor: 'grey',
         elevation: 10
     },
+    inputContainer: {
+        flexDirection: 'row',
+        width: '80%',
+        marginVertical: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        borderRadius: 20,
+        backgroundColor: 'white',
+        borderColor: 'grey',
+        shadowColor: 'black',
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        elevation: 5,
+    },
+    input: {
+        flex: 1,
+        marginLeft: 10,
+        fontSize: 16,
+    },
     btn: {
         width: '60%',
         height: 70,

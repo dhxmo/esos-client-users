@@ -8,7 +8,7 @@ import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
 import { btn, btn2 } from '../globals/style';
-import { GOOGLE_MAPS_API } from '@env';
+import { GOOGLE_MAPS_API } from '../config/variables';
 
 navigator.geolocation = require('react-native-geolocation-service');
 
@@ -73,7 +73,8 @@ const LocationScreen = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
                 </Modal>
-                {/* <View style={styles.autocompleteContainer}>
+                {/* TDO: fix google autocomplete location */}
+                <View style={selectedOption === 'For You' ? styles.collapsedAutoComplete : styles.autocompleteContainer}>
                     {selectedOption === 'For Someone' &&
                         <GooglePlacesAutocomplete
                             nearbyPlacesAPI='GooglePlacesSearch'
@@ -86,7 +87,6 @@ const LocationScreen = ({ navigation }) => {
                             enablePoweredByContainer={false}
                             fetchDetails={true}
                             autoFocus={true}
-                            // ref={textInput2}
                             query={{
                                 key: GOOGLE_MAPS_API,
                                 language: 'en',
@@ -95,7 +95,7 @@ const LocationScreen = ({ navigation }) => {
                         />
 
                     }
-                </View> */}
+                </View>
 
                 <TouchableOpacity
                     onPress={() => {
@@ -108,7 +108,7 @@ const LocationScreen = ({ navigation }) => {
             <View>
                 <MapView
                     provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-                    style={styles.map}
+                    style={selectedOption === 'For Someone' ? styles.map : styles.biggerMap}
                     customMapStyle={mapStyle}
                     showsUserLocation={true}
                     followsUserLocation={true}
@@ -146,6 +146,9 @@ const styles = StyleSheet.create({
         zIndex: 4,
         paddingBottom: 10,
     },
+    collapsedAutoComplete: {
+        height: 0
+    },
     backIcon: {
         position: 'absolute',
         top: 50,
@@ -158,8 +161,13 @@ const styles = StyleSheet.create({
         height: 300
     },
     map: {
+        height: 400,
+        width: SCREEN_WIDTH,
+        marginTop: 150
+    },
+    biggerMap: {
         height: 600,
-        width: SCREEN_WIDTH
+        width: SCREEN_WIDTH,
     },
     button1: {
         height: 80,
@@ -297,7 +305,7 @@ const autoComplete = {
         paddingTop: 20,
         flex: 1,
         backgroundColor: colors.white,
-        height: 400,
+        height: 200,
         width: 400,
         zIndex: 100
     },

@@ -1,11 +1,35 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Dimensions } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { colors, parameters } from '../globals/style';
 import cross from "../../assets/redCross.png";
 import { Ionicons } from '@expo/vector-icons';
-import { inputContainer, btn, btn2 } from '../globals/style';
+import { inputContainer, btn, btn2, input } from '../globals/style';
+import { BACKEND_SERVER_IP } from '../config/variables';
+import axios from 'axios';
 
 const LogInScreen = ({ navigation }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async () => {
+        const data = {
+            email,
+            password,
+        };
+
+        try {
+            await axios.post(`${BACKEND_SERVER_IP}/api/user/login`, JSON.stringify(data), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            window.alert('Logged in successfully');
+            return true;
+        } catch (error) {
+            window.alert(error);
+            return false;
+        }
+    }
     return (
         <View style={styles.container}>
             <View style={styles.backIcon}>
@@ -15,15 +39,21 @@ const LogInScreen = ({ navigation }) => {
                 <Image style={styles.img} source={cross} />
             </View>
             <View style={inputContainer}>
-                <TextInput style={styles.input} placeholder='email' />
+                <TextInput style={input} value={email}
+                    onChangeText={setEmail} placeholder='email' />
             </View>
             <View style={inputContainer}>
-                <TextInput secureTextEntry style={styles.input} placeholder='password' />
+                <TextInput value={password} secureTextEntry={true} onChangeText={setPassword} style={input} placeholder='password' />
             </View>
 
             {/* TODO --- add google auth and persist user state */}
             <View style={btn}>
-                <TouchableOpacity onPress={() => navigation.navigate('location')}>
+                <TouchableOpacity onPress={async () => {
+                    const go = await handleLogin();
+                    if (go) {
+                        navigation.navigate('location')
+                    }
+                }}>
                     <Text style={styles.text}>Log In</Text>
                 </TouchableOpacity>
             </View>

@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 
 import cross from "../../assets/redCross.png";
 import { Ionicons } from '@expo/vector-icons';
-import { inputContainer, btn, btn2 } from '../globals/style';
+import { inputContainer, btn, btn2, input } from '../globals/style';
 import axios from 'axios';
-import { BACKEND_SERVER_IP } from '@env'
+import { BACKEND_SERVER_IP } from '../config/variables'
 
 const RegisterScreen = ({ navigation }) => {
 
@@ -38,20 +38,20 @@ const RegisterScreen = ({ navigation }) => {
     };
 
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         if (!validateEmail(email)) {
             alert('Please enter a valid email address!');
-            return;
+            return false;
         }
 
         if (!validatePasswordStrength(password)) {
             alert('Please enter a strong password!');
-            return;
+            return false;
         }
 
         if (!validatePhoneNumber(phoneNumber)) {
             alert('Please enter a valid phone number!');
-            return;
+            return false;
         }
 
         const data = {
@@ -60,17 +60,20 @@ const RegisterScreen = ({ navigation }) => {
             phoneNumber,
         };
 
-        // Send data to server endpoint
-        axios.post(`${BACKEND_SERVER_IP}/api/user/register`, JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }).then(response => response.data)
-            .then(data => console.log(data))
-            .catch(error => console.error(error));
+        try {
+            const response = await axios.post(`${BACKEND_SERVER_IP}/api/user/register`, JSON.stringify(data), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            window.alert('Registered successfully');
+            return true;
+        } catch (error) {
+            window.alert(error);
+            return false;
+        }
     }
     return (
-
         <View style={styles.container}>
             <View style={styles.backIcon}>
                 <Ionicons name="arrow-back-outline" size={24} color="black" onPress={() => navigation.goBack()} />
@@ -79,19 +82,24 @@ const RegisterScreen = ({ navigation }) => {
                 <Image source={cross} />
             </View>
             <View style={inputContainer}>
-                <TextInput style={styles.input} value={email}
+                <TextInput style={input} value={email}
                     onChangeText={setEmail} placeholder='email' />
             </View>
             <View style={inputContainer}>
-                <TextInput style={styles.input} value={password} secureTextEntry={true} onChangeText={setPassword} placeholder='password' />
+                <TextInput style={input} value={password} secureTextEntry={true} onChangeText={setPassword} placeholder='password' />
             </View>
             <View style={inputContainer}>
-                <TextInput style={styles.input} value={phoneNumber}
+                <TextInput style={input} value={phoneNumber}
                     onChangeText={setPhoneNumber}
                     placeholder='phone number' />
             </View>
             <View style={btn}>
-                <TouchableOpacity onPress={() => handleRegister()}>
+                <TouchableOpacity onPress={async () => {
+                    const go = await handleRegister();
+                    if (go) {
+                        navigation.navigate('login')
+                    }
+                }}>
                     <Text style={styles.text}>Register</Text>
                 </TouchableOpacity>
             </View>
@@ -109,7 +117,7 @@ const RegisterScreen = ({ navigation }) => {
                     <Text style={styles.text}>Gmail</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </View >
     )
 }
 

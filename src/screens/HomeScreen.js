@@ -5,6 +5,7 @@ import cross from "../../assets/redCross.png";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, parameters } from '../globals/style';
 import axios from 'axios';
+import { BACKEND_SERVER_IP } from '../config/variables';
 
 // require('react-native-dotenv').config();
 const SUPPORT_TYPE = {
@@ -45,15 +46,18 @@ const HomeScreen = ({ navigation, route }) => {
                 selected: selected.selectedType,
                 emergency: selected.emergency
             };
-            await axios.post(`${process.env.BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => response.data)
-                .then(data => console.log(data))
-                .catch(error => console.error(error));
-            return true;
+            try {
+                await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                window.alert('Searching for the closest Ambulance')
+                return true;
+            } catch (error) {
+                window.alert(error);
+                return false;
+            }
         }
 
 
@@ -73,7 +77,7 @@ const HomeScreen = ({ navigation, route }) => {
                     onPress={() => handleSelect(SUPPORT_TYPE.BASIC)}
                     style={[
                         styles.button1,
-                        selected.selectedType === SUPPORT_TYPE.BASIC && { backgroundColor: 'red' },
+                        selected.selectedType === SUPPORT_TYPE.BASIC && { backgroundColor: colors.red },
                     ]}>
                     <Text style={styles.button1Text}>Basic Life Support</Text>
                     <Text>Small Injuries</Text>
@@ -83,14 +87,14 @@ const HomeScreen = ({ navigation, route }) => {
                     onPress={() => handleSelect(SUPPORT_TYPE.ADVANCED)}
                     style={[
                         styles.button1,
-                        selected.selectedType === SUPPORT_TYPE.ADVANCED && { backgroundColor: 'red' },
+                        selected.selectedType === SUPPORT_TYPE.ADVANCED && { backgroundColor: colors.red },
                     ]}>
                     <Text style={styles.button1Text}>Advanced Life Support</Text>
                     <Text>Heart Attack, Stroke</Text>
                     <Text>₹3000</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.btn} onPress={() => {
-                    const go = handleEmergencyCall();
+                <TouchableOpacity style={styles.btn} onPress={async () => {
+                    const go = await handleEmergencyCall();
                     if (go) navigation.navigate('track-ambulance', { location })
                 }}>
                     <Text style={styles.button2Text}>Call Ambulance</Text>
