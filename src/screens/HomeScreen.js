@@ -1,108 +1,125 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, TextInput } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import cross from "../../assets/redCross.png";
 
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { colors, parameters } from '../globals/style';
-import axios from 'axios';
+import { colors, parameters, inputContainer, input, btn } from '../globals/style';
 import { BACKEND_SERVER_IP } from '../config/variables';
+import axios from 'axios';
+import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// require('react-native-dotenv').config();
-const SUPPORT_TYPE = {
-    BASIC: 'basic',
-    ADVANCED: 'advanced',
-};
+// TODO : add location and cookie to asyncstorage
 
-const HomeScreen = ({ navigation, route }) => {
-    const { location } = route.params;
-
-    const [selected, setSelected] = useState({
-        selectedType: null,
-        emergency: false
+const HomeScreen = ({ navigation }) => {
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [OTP, setOTP] = useState('');
+    const [sendOTP, setSendOTP] = useState(false);
+    const [location, setLocation] = useState({
+        latitude: null,
+        longitude: null
     });
 
-    const handleSelect = (value) => {
-        if (value === SUPPORT_TYPE.BASIC) {
-            setSelected({
-                selectedType: SUPPORT_TYPE.BASIC,
-                emergency: false
-            });
-        } else if (value === SUPPORT_TYPE.ADVANCED) {
-            setSelected({
-                selectedType: SUPPORT_TYPE.ADVANCED,
-                emergency: true
-            });
-        }
-    };
+    useEffect(() => {
+        (async () => {
 
-    const handleEmergencyCall = async () => {
-        if (!selected.selectedType) {
-            alert('Please select BLS or ALS');
-            return false;
-        } else {
-            const data = {
-                latitude: location.latitude,
-                longitude: location.longitude,
-                selected: selected.selectedType,
-                emergency: selected.emergency
-            };
-            try {
-                await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                window.alert('Searching for the closest Ambulance')
-                return true;
-            } catch (error) {
-                window.alert(error);
-                return false;
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+                return;
             }
+
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
+            })
+        })();
+    }, []);
+
+    const handleSendOTP = async () => {
+        try {
+            await axios.post(`${BACKEND_SERVER_IP}/api/user/send-otp`, JSON.stringify({ phoneNumber }), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            window.alert('OTP sent');
+            setSendOTP(true);
+        } catch (error) {
+            window.alert(error);
+            return false;
         }
-
-
     };
 
+    // TODO: get token from server and set storage
+    const handleVerifyOTP = async () => {
+        try {
+            const response = await axios.post(`${BACKEND_SERVER_IP}/api/user/verify-otp`, JSON.stringify({ OTP }), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log("res", response);
+
+            // await AsyncStorage.setItem('sessionToken', sessionToken);
+            await AsyncStorage.setItem('location', location);
+
+            window.alert('OTP verified. Please confirm your location.');
+        } catch (error) {
+            window.alert(error);
+            return false;
+        }
+    }
     return (
         <View style={styles.container}>
-            <View style={styles.backIcon}>
-                <Ionicons name="arrow-back-outline" size={24} color="black" onPress={() => navigation.goBack()} />
-            </View>
             <View style={styles.header}>
                 <Image style={styles.img} source={cross} />
             </View>
 
+            <View style={styles.title}>
+                <Text style={styles.titleText}>esos</Text>
+            </View>
+
             <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                    onPress={() => handleSelect(SUPPORT_TYPE.BASIC)}
-                    style={[
-                        styles.button1,
-                        selected.selectedType === SUPPORT_TYPE.BASIC && { backgroundColor: colors.red },
-                    ]}>
-                    <Text style={styles.button1Text}>Basic Life Support</Text>
-                    <Text>Small Injuries</Text>
-                    <Text>₹1500</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => handleSelect(SUPPORT_TYPE.ADVANCED)}
-                    style={[
-                        styles.button1,
-                        selected.selectedType === SUPPORT_TYPE.ADVANCED && { backgroundColor: colors.red },
-                    ]}>
-                    <Text style={styles.button1Text}>Advanced Life Support</Text>
-                    <Text>Heart Attack, Stroke</Text>
-                    <Text>₹3000</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btn} onPress={async () => {
-                    const go = await handleEmergencyCall();
-                    if (go) navigation.navigate('track-ambulance', { location })
-                }}>
-                    <Text style={styles.button2Text}>Call Ambulance</Text>
-                </TouchableOpacity>
+                <View style={inputContainer}>
+                    <TextInput
+                        placeholder="Enter phone number (+91)"
+                        value={phoneNumber}
+                        onChangeText={setPhoneNumber}
+                        style={input}
+                    />
+                </View>
+
+                {!sendOTP &&
+                    <View>
+                        <TouchableOpacity style={btn} onPress={() => handleSendOTP()}>
+                            <Text style={styles.text}>Send OTP</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+
+                {sendOTP && <View style={styles.otpVerifyContainer}>
+                    <View style={inputContainer}>
+                        <TextInput
+                            placeholder="Enter OTP"
+                            value={OTP}
+                            onChangeText={setOTP}
+                            style={input}
+                        />
+                    </View>
+                    <TouchableOpacity style={btn} onPress={() => {
+                        const go = handleVerifyOTP();
+                        if (go) { navigation.navigate('location', { location }) }
+                    }
+                    }>
+                        <Text style={styles.text}>Verify OTP</Text>
+                    </TouchableOpacity>
+                </View>}
             </View>
         </View>
     )
 }
+
 
 export default HomeScreen
 
@@ -115,6 +132,14 @@ const styles = StyleSheet.create({
         height: SCREEN_HEIGHT,
         backgroundColor: '#FFFFFF',
     },
+    title: {
+        alignItems: 'center',
+        marginTop: 40
+    },
+    titleText: {
+        fontWeight: 'bold',
+        fontSize: 15
+    },
     header: {
         height: parameters.headerHeight * 4,
         borderBottomLeftRadius: 20,
@@ -123,34 +148,30 @@ const styles = StyleSheet.create({
     locationContainer: {
         marginTop: 20
     },
-    backIcon: {
-        position: 'absolute',
-        top: 50,
-        left: 20,
-        zIndex: 100
-    },
     map: {
         height: 250,
-        marginVertical: 10,
+        marginVertical: 0,
         width: SCREEN_WIDTH
     },
     buttonContainer: {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        marginTop: 50,
+        marginBottom: 20
     },
     button1: {
         height: 80,
         width: 240,
         backgroundColor: colors.white,
-        borderRadius: 20,
+        borderRadius: 30,
         alignItems: "center",
         justifyContent: "center",
         textAlign: 'center',
         marginHorizontal: 10,
         marginTop: 60,
         padding: 10,
-        elevation: 20
+        elevation: 15
     },
     button1Text: {
         color: colors.darkGrey,
@@ -158,24 +179,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
     },
-    button2: {
-        height: 80,
-        width: 300,
-        backgroundColor: colors.red,
-        borderRadius: 10,
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: 'center',
-        marginHorizontal: 10,
-        marginTop: 50,
-        padding: 10,
-        elevation: 20
-    },
-    button2Text: {
-        color: 'white',
-        fontSize: 25,
-        fontWeight: 'bold',
-    },
+
     button3: {
         height: 80,
         backgroundColor: colors.lightBlue,
@@ -193,20 +197,25 @@ const styles = StyleSheet.create({
     img: {
         width: '100%',
         height: '100%',
+        marginTop: 50,
         resizeMode: 'contain',
     },
-    btn: {
-        width: '60%',
-        height: 70,
-        backgroundColor: colors.red,
+    text: {
         color: 'white',
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 10,
-        margin: 10,
-        marginVertical: 40,
-        padding: 20,
-        marginTop: 60
+        fontSize: 20,
     },
+    otpVerifyContainer: {
+        alignItems: 'center'
+    },
+    inputContainer: {
+        borderWidth: 1,
+        borderColor: 'black',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 5,
+    },
+
+    input: {
+        flex: 1,
+    }
 })

@@ -9,43 +9,52 @@ import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
 import { btn, btn2 } from '../globals/style';
 import { GOOGLE_MAPS_API } from '../config/variables';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 navigator.geolocation = require('react-native-geolocation-service');
 
-const LocationScreen = ({ navigation }) => {
+const LocationScreen = ({ navigation, route }) => {
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const [selectedOption, setSelectedOption] = useState('For You');
+    // const { location } = route.params;
     const [location, setLocation] = useState({
         latitude: null,
         longitude: null
     });
 
-    const handleOptionSelect = (option) => {
-        setSelectedOption(option);
-        setIsDropdownVisible(false);
-    };
-
-    const handleLocationSelect = (data, details) => {
-        const { lat, lng } = details.geometry.location;
-        setLocation({ latitude: lat, longitude: lng });
-    };
-
     useEffect(() => {
         (async () => {
+            const location = await AsyncStorage.getItem('location');
+            setLocation(location)
+        })
+    })
 
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
-            }
+    // const handleOptionSelect = (option) => {
+    //     setSelectedOption(option);
+    //     setIsDropdownVisible(false);
+    // };
 
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude
-            })
-        })();
-    }, []);
+    // const handleLocationSelect = (data, details) => {
+    //     const { lat, lng } = details.geometry.location;
+    //     setLocation({ latitude: lat, longitude: lng });
+    // };
+
+    // useEffect(() => {
+    //     (async () => {
+
+    //         let { status } = await Location.requestForegroundPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             setErrorMsg('Permission to access location was denied');
+    //             return;
+    //         }
+
+    //         let location = await Location.getCurrentPositionAsync({});
+    //         setLocation({
+    //             latitude: location.coords.latitude,
+    //             longitude: location.coords.longitude
+    //         })
+    //     })();
+    // }, []);
 
 
     // TODO: add support for own or other location 
@@ -99,7 +108,8 @@ const LocationScreen = ({ navigation }) => {
 
                 <TouchableOpacity
                     onPress={() => {
-                        navigation.navigate('home', { location });
+                        console.log("location page:", location);
+                        navigation.navigate('order-ambulance', { location });
                     }}
                     style={[btn]}>
                     <Text style={styles.button1Text}>Confirm Location</Text>
