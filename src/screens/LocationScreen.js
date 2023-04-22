@@ -40,10 +40,10 @@ const LocationScreen = ({ navigation }) => {
     };
 
     const getCurrentLocation = async () => {
-        let { status } = await Location.requestBackgroundPermissionsAsync();
-        if (status !== 'granted') {
-            setErrorMsg('Permission to access location was denied');
-            return;
+        let status = '';
+        while (status !== 'granted') {
+            let { permission_status } = await Location.requestBackgroundPermissionsAsync();
+            status = permission_status;
         }
 
         let loc = null;

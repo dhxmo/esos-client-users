@@ -7,6 +7,7 @@ import { BACKEND_SERVER_IP } from '../config/variables';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// TODO: Twilio sometimes crashes. have a backup OTP service
 const HomeScreen = ({ navigation }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [OTP, setOTP] = useState('');
@@ -27,7 +28,6 @@ const HomeScreen = ({ navigation }) => {
         }
     };
 
-    // TODO: get token from server and set storage
     const handleVerifyOTP = async () => {
         try {
             const response = await axios.post(`${BACKEND_SERVER_IP}/api/user/verify-otp`,
