@@ -9,4 +9,4 @@ export default function App() {
   );
 }
 
-// TODO: on logout, remove all async storage stuff
+// TODO: on logout, remove all async storage stuff, stopLocationUpdates

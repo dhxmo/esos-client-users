@@ -40,7 +40,7 @@ const LocationScreen = ({ navigation }) => {
     };
 
     const getCurrentLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
+        let { status } = await Location.requestBackgroundPermissionsAsync();
         if (status !== 'granted') {
             setErrorMsg('Permission to access location was denied');
             return;
@@ -57,11 +57,10 @@ const LocationScreen = ({ navigation }) => {
                 setLoading(false);
             } else {
                 // Wait for a second before retrying
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
         }
     }
-
 
     useEffect(() => {
         (async () => {
@@ -99,8 +98,8 @@ const LocationScreen = ({ navigation }) => {
 
     if (loading) {
         return (
-            <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
+            <View style={styles.activityIndicator}>
+                <ActivityIndicator size="large" color="#BE0000" />
             </View>
         )
     }
@@ -192,6 +191,11 @@ export const SCREEN_WIDTH = Dimensions.get('window').width;
 export const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
+    activityIndicator: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: SCREEN_HEIGHT,
+    },
     container: {
         // paddingBottom: 30,
         height: SCREEN_HEIGHT,

@@ -45,27 +45,35 @@ const OrderAmbulanceScreen = ({ navigation }) => {
             return false;
         } else {
             try {
-                const destinationLocation = await AsyncStorage.getItem("@location");
-                console.log("ambulance page: get location: ", destinationLocation);
-
-                const destinationLocationParsed = JSON.parse(destinationLocation);
-                console.log("ambulance page: get location parsed: ", destinationLocationParsed);
-
-                const destination = {
-                    latitude: destinationLocationParsed["latitude"],
-                    longitude: destinationLocationParsed["longitude"]
-                }
-                setLocation(destination);
-
-                const data = {
-                    latitude: location.latitude,
-                    longitude: location.longitude,
+                let data = {
+                    latitude: null,
+                    longitude: null,
                     selected: selected.selectedType,
                     emergency: selected.emergency
                 };
+                console.log("b4 loop", data);
 
                 const token = await AsyncStorage.getItem("@sessionToken");
-                console.log(token);
+
+                while (!data.longitude && !data.latitude) {
+                    const destinationLocation = await AsyncStorage.getItem("@location");
+                    console.log("ambulance page: get location: ", destinationLocation);
+
+                    const destinationLocationParsed = JSON.parse(destinationLocation);
+                    console.log("ambulance page: get location parsed: ", destinationLocationParsed);
+
+                    const destination = {
+                        latitude: destinationLocationParsed["latitude"],
+                        longitude: destinationLocationParsed["longitude"]
+                    }
+                    setLocation(destination);
+
+                    data = {
+                        latitude: location.latitude,
+                        longitude: location.longitude
+                    }
+                    console.log("after loop", data);
+                }
 
                 const res = await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
                     headers: {
@@ -76,7 +84,7 @@ const OrderAmbulanceScreen = ({ navigation }) => {
 
                 console.log(res.data);
 
-                // window.alert('Searching for the closest Ambulance')
+                window.alert('Searching for the closest Ambulance')
 
                 return true;
             } catch (error) {
