@@ -97,7 +97,7 @@ module.exports = {
         fontSize: 16,
     },
     btn: {
-        width: '60%',
+        width: 250,
         height: 70,
         backgroundColor: redTheme,
         color: 'white',
@@ -112,7 +112,6 @@ module.exports = {
     text: {
         color: 'white',
         fontSize: 20,
-        // fontFamily: 'Inter_900Black'
     },
     btn2: {
         width: '30%',

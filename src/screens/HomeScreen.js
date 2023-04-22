@@ -1,40 +1,16 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, TextInput } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import cross from "../../assets/redCross.png";
 
 import { colors, parameters, inputContainer, input, btn } from '../globals/style';
 import { BACKEND_SERVER_IP } from '../config/variables';
 import axios from 'axios';
-import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// TODO : add location and cookie to asyncstorage
 
 const HomeScreen = ({ navigation }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [OTP, setOTP] = useState('');
     const [sendOTP, setSendOTP] = useState(false);
-    const [location, setLocation] = useState({
-        latitude: null,
-        longitude: null
-    });
-
-    useEffect(() => {
-        (async () => {
-
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
-            }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude
-            })
-        })();
-    }, []);
 
     const handleSendOTP = async () => {
         try {
@@ -54,15 +30,19 @@ const HomeScreen = ({ navigation }) => {
     // TODO: get token from server and set storage
     const handleVerifyOTP = async () => {
         try {
-            const response = await axios.post(`${BACKEND_SERVER_IP}/api/user/verify-otp`, JSON.stringify({ OTP }), {
+            const response = await axios.post(`${BACKEND_SERVER_IP}/api/user/verify-otp`,
+                JSON.stringify({
+                    phoneNumber,
+                    otp: OTP
+                }), {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-            console.log("res", response);
+            const sessionToken = response.data.token;
 
-            // await AsyncStorage.setItem('sessionToken', sessionToken);
-            await AsyncStorage.setItem('location', location);
+            await AsyncStorage.setItem('@sessionToken', sessionToken);
+            await AsyncStorage.setItem('@phoneNumber', phoneNumber);
 
             window.alert('OTP verified. Please confirm your location.');
         } catch (error) {
@@ -70,6 +50,7 @@ const HomeScreen = ({ navigation }) => {
             return false;
         }
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -87,6 +68,7 @@ const HomeScreen = ({ navigation }) => {
                         value={phoneNumber}
                         onChangeText={setPhoneNumber}
                         style={input}
+                        keyboardType='number-pad'
                     />
                 </View>
 
@@ -105,11 +87,12 @@ const HomeScreen = ({ navigation }) => {
                             value={OTP}
                             onChangeText={setOTP}
                             style={input}
+                            keyboardType='number-pad'
                         />
                     </View>
                     <TouchableOpacity style={btn} onPress={() => {
                         const go = handleVerifyOTP();
-                        if (go) { navigation.navigate('location', { location }) }
+                        if (go) { navigation.navigate('location') }
                     }
                     }>
                         <Text style={styles.text}>Verify OTP</Text>

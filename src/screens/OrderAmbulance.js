@@ -1,11 +1,12 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import cross from "../../assets/redCross.png";
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, parameters } from '../globals/style';
 import axios from 'axios';
 import { BACKEND_SERVER_IP } from '../config/variables';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // require('react-native-dotenv').config();
 const SUPPORT_TYPE = {
@@ -13,8 +14,11 @@ const SUPPORT_TYPE = {
     ADVANCED: 'advanced',
 };
 
-const OrderAmbulanceScreen = ({ navigation, route }) => {
-    const { location } = route.params;
+const OrderAmbulanceScreen = ({ navigation }) => {
+    const [location, setLocation] = useState({
+        latitude: null,
+        longitude: null
+    });
 
     const [selected, setSelected] = useState({
         selectedType: null,
@@ -40,20 +44,40 @@ const OrderAmbulanceScreen = ({ navigation, route }) => {
             alert('Please select BLS or ALS');
             return false;
         } else {
-            const data = {
-                latitude: location.latitude,
-                longitude: location.longitude,
-                selected: selected.selectedType,
-                emergency: selected.emergency
-            };
-            console.log("order ambulance page", data);
             try {
-                await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
+                const destinationLocation = await AsyncStorage.getItem("@location");
+                console.log("ambulance page: get location: ", destinationLocation);
+
+                const destinationLocationParsed = JSON.parse(destinationLocation);
+                console.log("ambulance page: get location parsed: ", destinationLocationParsed);
+
+                const destination = {
+                    latitude: destinationLocationParsed["latitude"],
+                    longitude: destinationLocationParsed["longitude"]
+                }
+                setLocation(destination);
+
+                const data = {
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    selected: selected.selectedType,
+                    emergency: selected.emergency
+                };
+
+                const token = await AsyncStorage.getItem("@sessionToken");
+                console.log(token);
+
+                const res = await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
                     }
                 });
-                window.alert('Searching for the closest Ambulance')
+
+                console.log(res.data);
+
+                // window.alert('Searching for the closest Ambulance')
+
                 return true;
             } catch (error) {
                 window.alert(error);
@@ -95,8 +119,9 @@ const OrderAmbulanceScreen = ({ navigation, route }) => {
                     <Text>₹3000</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button2} onPress={async () => {
-                    const go = await handleEmergencyCall();
-                    if (go) navigation.navigate('track-ambulance', { location })
+                    handleEmergencyCall()
+                    // const go = await handleEmergencyCall();
+                    // if (go) navigation.navigate('track-ambulance')
                 }}>
                     <Text style={styles.button2Text}>Call Ambulance</Text>
                 </TouchableOpacity>

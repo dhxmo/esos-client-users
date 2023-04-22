@@ -8,3 +8,5 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+// TODO: on logout, remove all async storage stuff
