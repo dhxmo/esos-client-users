@@ -42,7 +42,7 @@ const HomeScreen = ({ navigation }) => {
             const sessionToken = response.data.token;
 
             await AsyncStorage.setItem('@sessionToken', sessionToken);
-            await AsyncStorage.setItem('@phoneNumber', phoneNumber);
+            await AsyncStorage.setItem('@userPhone', phoneNumber);
 
             window.alert('OTP verified. Please confirm your location.');
         } catch (error) {

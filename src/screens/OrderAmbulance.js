@@ -44,12 +44,14 @@ const OrderAmbulanceScreen = ({ navigation }) => {
             alert('Please select BLS or ALS');
             return false;
         } else {
+            const userPhone = await AsyncStorage.getItem("@userPhone");
             try {
                 let data = {
                     latitude: null,
                     longitude: null,
                     selected: selected.selectedType,
-                    emergency: selected.emergency
+                    emergency: selected.emergency,
+                    userPhone: userPhone
                 };
                 console.log("b4 loop", data);
 
