@@ -1,6 +1,3 @@
-
-
-
 import { View, StyleSheet, Dimensions, TouchableOpacity, Text, Modal, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
@@ -11,7 +8,7 @@ import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
 import { btn } from '../globals/style';
-import { GOOGLE_MAPS_API } from '../config/variables';
+// import { GOOGLE_MAPS_API } from '../config/variables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 navigator.geolocation = require('react-native-geolocation-service');
@@ -125,7 +122,7 @@ const LocationScreen = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
                 </Modal>
-                {/* TDO: fix current location of null error
+                {/* TDO: fix current location of null error */}
                 <View style={selectedOption === 'For You' ? styles.collapsedAutoComplete : styles.autocompleteContainer}>
                     {selectedOption === 'For Someone' &&
                         <GooglePlacesAutocomplete
@@ -147,7 +144,7 @@ const LocationScreen = ({ navigation }) => {
                         />
 
                     }
-                </View> */}
+                </View>
 
                 <TouchableOpacity
                     onPress={() => {
