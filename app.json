@@ -11,7 +11,14 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {},
+    "android": {
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE"
+      ],
+      "package": "com.dhxmo.esos"
+    },
     "web": {},
     "plugins": [
       [
@@ -20,6 +27,11 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "12adf398-8473-4859-b55a-d26bb0dd1f04"
+      }
+    }
   }
 }

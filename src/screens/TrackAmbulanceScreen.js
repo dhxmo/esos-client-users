@@ -9,7 +9,7 @@ import { colors } from '../globals/style';
 const locationMarker = require("../../assets/location.png");
 const ambulanceMarker = require("../../assets/ambulance.png");
 
-const TrackAmbulanceScreen = ({ route }) => {
+const TrackAmbulanceScreen = ({ }) => {
     const [location, setLocation] = useState({
         latitude: null,
         longitude: null
@@ -25,27 +25,27 @@ const TrackAmbulanceScreen = ({ route }) => {
     });
 
     useEffect(() => {
-        (async () => {
-            // const destinationLocation = await AsyncStorage.getItem("@location");
+        // (async () => {
+        // const destinationLocation = await AsyncStorage.getItem("@location");
 
-            // const destinationLocationParsed = JSON.parse(destinationLocation);
+        // const destinationLocationParsed = JSON.parse(destinationLocation);
 
-            // const destination = {
-            //     latitude: destinationLocationParsed["latitude"],
-            //     longitude: destinationLocationParsed["longitude"]
-            // }
+        // const destination = {
+        //     latitude: destinationLocationParsed["latitude"],
+        //     longitude: destinationLocationParsed["longitude"]
+        // }
 
-            // setLocation({
-            //     latitude: destination["latitude"],
-            //     longitude: destination["longitude"]
-            // })
-            // setRegion({
-            //     latitude: location.latitude,
-            //     longitude: location.longitude,
-            //     latitudeDelta: 0.01,
-            //     longitudeDelta: 0.01,
-            // })
-        })
+        // setLocation({
+        //     latitude: destination["latitude"],
+        //     longitude: destination["longitude"]
+        // })
+        // setRegion({
+        //     latitude: location.latitude,
+        //     longitude: location.longitude,
+        //     latitudeDelta: 0.01,
+        //     longitudeDelta: 0.01,
+        // })
+        // })
         // Get the GPS data for the ambulance from nodeJS websocket
         // and update the state variables
         setLocation({

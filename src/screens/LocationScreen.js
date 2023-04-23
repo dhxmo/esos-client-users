@@ -36,10 +36,10 @@ const LocationScreen = ({ navigation }) => {
         setIsDropdownVisible(false);
     };
 
-    // const handleLocationSelect = (_, details) => {
-    //     const { lat, lng } = details.geometry.location;
-    //     setLocation({ latitude: lat, longitude: lng });
-    // };
+    const handleLocationSelect = (_, details) => {
+        const { lat, lng } = details.geometry.location;
+        setLocation({ latitude: lat, longitude: lng });
+    };
 
     useEffect(() => {
         (async () => {
@@ -49,20 +49,19 @@ const LocationScreen = ({ navigation }) => {
                 return;
             }
 
-            const locationPromise = await Location.getCurrentPositionAsync({});
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Timeout')), 3000)
-            );
-            const loc = await Promise.race([locationPromise, timeoutPromise]);
-
-            if (loc) {
-                setLocation({
-                    latitude: loc.coords.latitude,
-                    longitude: loc.coords.longitude,
-                });
-                setLoading(false);
-            } else {
-                setErrorMsg('Could not get location');
+            let loc = null;
+            while (loc === null) {
+                loc = await Location.getCurrentPositionAsync({});
+                if (loc.coords.latitude && loc.coords.longitude) {
+                    setLocation({
+                        latitude: loc.coords.latitude,
+                        longitude: loc.coords.longitude
+                    })
+                    setLoading(false);
+                } else {
+                    // Wait for a second before retrying
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
             }
 
             if (location) {
