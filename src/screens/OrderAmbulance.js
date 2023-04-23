@@ -49,42 +49,34 @@ const OrderAmbulanceScreen = ({ navigation }) => {
                 let data = {
                     latitude: null,
                     longitude: null,
-                    selected: selected.selectedType,
-                    emergency: selected.emergency,
-                    userPhone: userPhone
                 };
-                console.log("b4 loop", data);
-
                 const token = await AsyncStorage.getItem("@sessionToken");
 
                 while (!data.longitude && !data.latitude) {
                     const destinationLocation = await AsyncStorage.getItem("@location");
-                    console.log("ambulance page: get location: ", destinationLocation);
 
                     const destinationLocationParsed = JSON.parse(destinationLocation);
-                    console.log("ambulance page: get location parsed: ", destinationLocationParsed);
 
                     const destination = {
                         latitude: destinationLocationParsed["latitude"],
                         longitude: destinationLocationParsed["longitude"]
                     }
-                    setLocation(destination);
 
                     data = {
-                        latitude: location.latitude,
-                        longitude: location.longitude
+                        latitude: destination["latitude"],
+                        longitude: destination["longitude"],
+                        selected: selected.selectedType,
+                        emergency: selected.emergency,
+                        userPhone: userPhone
                     }
-                    console.log("after loop", data);
                 }
 
-                const res = await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
+                await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
                     }
                 });
-
-                console.log(res.data);
 
                 window.alert('Searching for the closest Ambulance')
 
@@ -105,6 +97,9 @@ const OrderAmbulanceScreen = ({ navigation }) => {
             </View>
             <View style={styles.header}>
                 <Image style={styles.img} source={cross} />
+            </View>
+            <View style={styles.title}>
+                <Text style={styles.titleText}>esos</Text>
             </View>
 
             <View style={styles.buttonContainer}>
@@ -129,9 +124,9 @@ const OrderAmbulanceScreen = ({ navigation }) => {
                     <Text>₹3000</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button2} onPress={async () => {
-                    handleEmergencyCall()
-                    // const go = await handleEmergencyCall();
-                    // if (go) navigation.navigate('track-ambulance')
+                    // await handleEmergencyCall()
+                    const go = await handleEmergencyCall();
+                    if (go) navigation.navigate('track-ambulance')
                 }}>
                     <Text style={styles.button2Text}>Call Ambulance</Text>
                 </TouchableOpacity>
@@ -155,6 +150,14 @@ const styles = StyleSheet.create({
         height: parameters.headerHeight * 4,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
+    },
+    title: {
+        alignItems: 'center',
+        marginTop: -20
+    },
+    titleText: {
+        fontWeight: 'bold',
+        fontSize: 15
     },
     locationContainer: {
         marginTop: 20

@@ -1,3 +1,6 @@
+
+
+
 import { View, StyleSheet, Dimensions, TouchableOpacity, Text, Modal, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
@@ -21,11 +24,13 @@ const LocationScreen = ({ navigation }) => {
         latitude: null,
         longitude: null
     });
-    const [confirmedLocation, setConfirmedLocation] = useState({
-        latitude: null,
-        longitude: null
+    const [region, setRegion] = useState({
+        latitude: location ? location.latitude : null,
+        longitude: location ? location.longitude : null,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+    });
 
-    })
 
     const [loading, setLoading] = useState(true);
 
@@ -34,62 +39,52 @@ const LocationScreen = ({ navigation }) => {
         setIsDropdownVisible(false);
     };
 
-    const handleLocationSelect = (_, details) => {
-        const { lat, lng } = details.geometry.location;
-        setLocation({ latitude: lat, longitude: lng });
-    };
-
-    const getCurrentLocation = async () => {
-        let status = '';
-        while (status !== 'granted') {
-            let { permission_status } = await Location.requestBackgroundPermissionsAsync();
-            status = permission_status;
-        }
-
-        let loc = null;
-        while (loc === null) {
-            loc = await Location.getCurrentPositionAsync({});
-            if (loc.coords.latitude && loc.coords.longitude) {
-                setLocation({
-                    latitude: loc.coords.latitude,
-                    longitude: loc.coords.longitude
-                })
-                setLoading(false);
-            } else {
-                // Wait for a second before retrying
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-        }
-    }
+    // const handleLocationSelect = (_, details) => {
+    //     const { lat, lng } = details.geometry.location;
+    //     setLocation({ latitude: lat, longitude: lng });
+    // };
 
     useEffect(() => {
         (async () => {
-            await getCurrentLocation();
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                window.alert('Permission to access location was denied');
+                return;
+            }
+
+            const locationPromise = await Location.getCurrentPositionAsync({});
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Timeout')), 3000)
+            );
+            const loc = await Promise.race([locationPromise, timeoutPromise]);
+
+            if (loc) {
+                setLocation({
+                    latitude: loc.coords.latitude,
+                    longitude: loc.coords.longitude,
+                });
+                setLoading(false);
+            } else {
+                setErrorMsg('Could not get location');
+            }
+
+            if (location) {
+                setRegion({
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                });
+            }
         })();
-    }, []);
+    }, [location]);
 
     const handleLocationConfirm = async () => {
         try {
-            if (selectedOption === 'For You') {
-                while (!location.latitude && !location.longitude) {
-                    await getCurrentLocation();
-                }
-
-                const confirmedLoc = {
-                    latitude: location.latitude,
-                    longitude: location.longitude
-                };
-                setConfirmedLocation(confirmedLoc);
-
-                if (confirmedLocation.latitude && confirmedLocation.longitude) {
-                    await AsyncStorage.setItem("@location", JSON.stringify(confirmedLocation));
-                }
-
-                return true
-
-            } else if (selectedOption === 'For Someone') {
-                // confirm location before setting
+            if (location.latitude && location.longitude) {
+                await AsyncStorage.setItem("@location", JSON.stringify(location));
             }
+            return true
         } catch (error) {
             window.alert(error)
             return false
@@ -130,7 +125,7 @@ const LocationScreen = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
                 </Modal>
-                {/* TDO: fix google autocomplete location */}
+                {/* TDO: fix current location of null error
                 <View style={selectedOption === 'For You' ? styles.collapsedAutoComplete : styles.autocompleteContainer}>
                     {selectedOption === 'For Someone' &&
                         <GooglePlacesAutocomplete
@@ -152,7 +147,7 @@ const LocationScreen = ({ navigation }) => {
                         />
 
                     }
-                </View>
+                </View> */}
 
                 <TouchableOpacity
                     onPress={() => {
@@ -172,12 +167,7 @@ const LocationScreen = ({ navigation }) => {
                     customMapStyle={mapStyle}
                     showsUserLocation={true}
                     followsUserLocation={true}
-                    region={{
-                        latitude: location ? location.latitude : location.latitude,
-                        longitude: location ? location.longitude : location.longitude,
-                        latitudeDelta: 0.01,
-                        longitudeDelta: 0.01,
-                    }}
+                    region={region}
                 />
             </View>
 
@@ -197,7 +187,6 @@ const styles = StyleSheet.create({
         height: SCREEN_HEIGHT,
     },
     container: {
-        // paddingBottom: 30,
         height: SCREEN_HEIGHT,
         backgroundColor: colors.white,
         alignItems: 'center'
@@ -205,14 +194,28 @@ const styles = StyleSheet.create({
     autocompleteContainer: {
         marginTop: 10,
         marginBottom: 30,
-        borderColor: 'black',
-        height: 100,
-        backgroundColor: colors.white,
+        borderColor: colors.red,
+        height: SCREEN_HEIGHT / 3,
+        // width: 350,
+        // backgroundColor: colors.red,
         zIndex: 4,
         paddingBottom: 10,
     },
     collapsedAutoComplete: {
         height: 0
+    },
+    confirm: {
+        width: 250,
+        height: 70,
+        backgroundColor: colors.red,
+        color: 'white',
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 10,
+        margin: 10,
+        marginVertical: 40,
+        padding: 20
     },
     backIcon: {
         position: 'absolute',
@@ -226,14 +229,15 @@ const styles = StyleSheet.create({
         height: 300
     },
     map: {
-        height: 400,
+        height: 250,
         width: SCREEN_WIDTH,
-        marginTop: 150
+        marginTop: 350
     },
     biggerMap: {
         height: 600,
         width: SCREEN_WIDTH,
     },
+
     button1: {
         height: 80,
         width: 240,
@@ -358,7 +362,7 @@ const autoComplete = {
     textInput: {
         backgroundColor: colors.white,
         height: 60,
-        borderRadius: 5,
+        borderRadius: 20,
         paddingVertical: 2,
         paddingHorizontal: 10,
         fontSize: 15,
@@ -370,8 +374,8 @@ const autoComplete = {
         paddingTop: 20,
         flex: 1,
         backgroundColor: colors.white,
-        height: 200,
-        width: 400,
+        height: 500,
+        width: 350,
         zIndex: 100
     },
 

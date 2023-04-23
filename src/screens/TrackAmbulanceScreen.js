@@ -5,12 +5,31 @@ import { mapStyle } from '../globals/mapStyle';
 
 
 const TrackAmbulanceScreen = ({ route }) => {
-    const { location } = route.params;
+    const [location, setLocation] = useState({
+        latitude: null,
+        longitude: null
+    })
     const [ambulanceLocation, setAmbulanceLocation] = useState(null);
 
     useEffect(() => {
+        (async () => {
+            const destinationLocation = await AsyncStorage.getItem("@location");
+
+            const destinationLocationParsed = JSON.parse(destinationLocation);
+
+            const destination = {
+                latitude: destinationLocationParsed["latitude"],
+                longitude: destinationLocationParsed["longitude"]
+            }
+
+            setLocation({
+                latitude: destination["latitude"],
+                longitude: destination["longitude"]
+            })
+        })
         // Get the GPS data for the ambulance from nodeJS websocket
         // and update the state variables
+
     }, []);
 
     return (
