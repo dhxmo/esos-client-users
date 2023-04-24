@@ -1,4 +1,4 @@
-import { View, StyleSheet, Dimensions, Image, Button, TouchableOpacity, Text, Animated } from 'react-native'
+import { View, StyleSheet, Dimensions, Image, Button, TouchableOpacity, Text, Animated, FileSystem } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import { mapStyle } from '../globals/mapStyle';
@@ -7,6 +7,7 @@ import { BACKEND_SERVER_IP, GOOGLE_MAPS_API } from '../config/variables';
 import { colors, btn } from '../globals/style';
 import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ffmpeg from 'fluent-ffmpeg';
 
 const locationMarker = require("../../assets/location.png");
 const ambulanceMarker = require("../../assets/ambulance.png");
@@ -27,6 +28,7 @@ const TrackAmbulanceScreen = ({ }) => {
     });
 
     const [recording, setRecording] = React.useState();
+    const [recordingURI, setRecordingURI] = React.useState("");
     const [isRecording, setIsRecording] = React.useState(false);
 
     const startRecording = async () => {
@@ -63,24 +65,23 @@ const TrackAmbulanceScreen = ({ }) => {
         await Audio.setAudioModeAsync({
             allowsRecordingIOS: false,
         });
+        setRecordingURI(recording.getURI());
         const uri = recording.getURI();
 
         console.log('Recording stopped and stored at', uri);
     }
 
-    const onSend = async () => {
+    const handleAudioSend = async () => {
         const emergency_id = await AsyncStorage.getItem("@emergency-id");
 
-        const formData = new FormData();
-        formData.append('audio', {
-            uri,
-            type: 'audio/3gpp',
-            name: `recording-${emergency_id}.3gp`,
-        });
+        const data = {
+            emergencyId: emergency_id,
+            audio: recordingURI
+        }
 
         try {
             await axios.post(`${BACKEND_SERVER_IP}/api/emergency/audio`,
-                formData
+                JSON.stringify({ data })
                 , {
                     headers: {
                         'Content-Type': 'application/json',
@@ -117,8 +118,13 @@ const TrackAmbulanceScreen = ({ }) => {
         //     longitudeDelta: 0.01,
         // })
         // })
+
+
         // Get the GPS data for the ambulance from nodeJS websocket
         // and update the state variables
+        // ===ws
+
+
         setLocation({
             latitude: 12.9693739,
             longitude: 77.6806338
@@ -131,6 +137,7 @@ const TrackAmbulanceScreen = ({ }) => {
         })
     }, []);
 
+    // TODO: make dynamic
 
     const origin = { latitude: 12.9693739, longitude: 77.6806338 };
     const ambulance = { latitude: 12.9593639, longitude: 77.6706238 };
@@ -138,6 +145,7 @@ const TrackAmbulanceScreen = ({ }) => {
     return (
         <View style={styles.container}>
 
+            {/* TODO: load the source and destination, not the whole world */}
             <MapView
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
@@ -189,12 +197,14 @@ const TrackAmbulanceScreen = ({ }) => {
                     </View>
                 </TouchableOpacity>
 
+
                 <TouchableOpacity
                     style={styles.sendBtn}
-                    onPress={() => onSend()}
+                    onPress={() => handleAudioSend()}
                 >
                     <Text style={styles.sendBtnText}>Send</Text>
                 </TouchableOpacity>
+
             </View>
         </View>
     );

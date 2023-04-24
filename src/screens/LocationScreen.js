@@ -8,7 +8,7 @@ import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
 import { btn } from '../globals/style';
-// import { GOOGLE_MAPS_API } from '../config/variables';
+import { GOOGLE_MAPS_API } from '../config/variables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 navigator.geolocation = require('react-native-geolocation-service');
@@ -41,6 +41,18 @@ const LocationScreen = ({ navigation }) => {
         setLocation({ latitude: lat, longitude: lng });
     };
 
+    const handleClearLocation = () => {
+        setLocation({ latitude: null, longitude: null });
+    };
+
+    const getLocation = async () => {
+        let { status } = await Location.requestBackgroundPermissionsAsync();
+        if (status !== 'granted') {
+            window.alert('Permission to access location was denied');
+            return;
+        }
+    }
+
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -51,16 +63,19 @@ const LocationScreen = ({ navigation }) => {
 
             let loc = null;
             while (loc === null) {
-                loc = await Location.getCurrentPositionAsync({});
+                loc = await Location.getCurrentPositionAsync({
+                    enableHighAccuracy: true,
+                    accuracy: Location.Accuracy.Highest,
+                })
                 if (loc.coords.latitude && loc.coords.longitude) {
                     setLocation({
                         latitude: loc.coords.latitude,
                         longitude: loc.coords.longitude
-                    })
+                    });
                     setLoading(false);
                 } else {
                     // Wait for a second before retrying
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             }
 
@@ -71,9 +86,11 @@ const LocationScreen = ({ navigation }) => {
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                 });
+                setLoading(false);
             }
         })();
     }, [location]);
+
 
     const handleLocationConfirm = async () => {
         try {
@@ -121,7 +138,7 @@ const LocationScreen = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
                 </Modal>
-                {/* TDO: fix current location of null error */}
+                {/* TODO: select location properly and update map location on address selection*/}
                 <View style={selectedOption === 'For You' ? styles.collapsedAutoComplete : styles.autocompleteContainer}>
                     {selectedOption === 'For Someone' &&
                         <GooglePlacesAutocomplete
@@ -131,7 +148,6 @@ const LocationScreen = ({ navigation }) => {
                             listViewDisplayed="auto"
                             debounce={400}
                             minLength={2}
-                            currentLocation={true}
                             enablePoweredByContainer={false}
                             fetchDetails={true}
                             autoFocus={true}
@@ -141,7 +157,6 @@ const LocationScreen = ({ navigation }) => {
                             }}
                             styles={autoComplete}
                         />
-
                     }
                 </View>
 
@@ -191,7 +206,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 30,
         borderColor: colors.red,
-        height: SCREEN_HEIGHT / 3,
+        height: SCREEN_HEIGHT / 4,
         // width: 350,
         // backgroundColor: colors.red,
         zIndex: 4,
@@ -199,6 +214,14 @@ const styles = StyleSheet.create({
     },
     collapsedAutoComplete: {
         height: 0
+    },
+    clearBtn: {
+        backgroundColor: colors.white,
+        width: 50,
+        height: 25,
+        borderColor: colors.red,
+        borderRadius: 20,
+        marginLeft: 20
     },
     confirm: {
         width: 250,
@@ -225,9 +248,9 @@ const styles = StyleSheet.create({
         height: 300
     },
     map: {
-        height: 250,
+        height: 350,
         width: SCREEN_WIDTH,
-        marginTop: 350
+        marginTop: 250
     },
     biggerMap: {
         height: 600,
@@ -259,7 +282,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#d3d3d3',
+        borderColor: colors.red,
         paddingHorizontal: 12,
         paddingVertical: 10,
         width: 150,
@@ -269,7 +292,7 @@ const styles = StyleSheet.create({
     },
 
     dropdownButtonText: {
-        color: '#333333',
+        color: colors.red,
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
@@ -356,6 +379,7 @@ const styles = StyleSheet.create({
 
 const autoComplete = {
     textInput: {
+        zIndex: 5,
         backgroundColor: colors.white,
         height: 60,
         borderRadius: 20,
@@ -370,11 +394,10 @@ const autoComplete = {
         paddingTop: 20,
         flex: 1,
         backgroundColor: colors.white,
-        height: 500,
+        height: 200,
         width: 350,
         zIndex: 100
     },
-
     textInputContainer: {
         flexDirection: 'row',
     },

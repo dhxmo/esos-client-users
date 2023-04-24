@@ -79,7 +79,7 @@ const OrderAmbulanceScreen = ({ navigation }) => {
                     }
                 });
 
-                await AsyncStorage.setItem("@emergency-id", res._id);
+                await AsyncStorage.setItem("@emergency-id", res.data.data._id);
 
                 window.alert('Searching for the closest Ambulance')
 

@@ -11,6 +11,12 @@ export function MainStack() {
     return (
         <Main.Navigator>
             <Main.Screen
+                name="track-ambulance"
+                component={TrackAmbulanceScreen}
+                options={{ headerShown: false }}
+            />
+
+            <Main.Screen
                 name="home"
                 component={HomeScreen}
                 options={{ headerShown: false }}
@@ -25,11 +31,8 @@ export function MainStack() {
                 component={OrderAmbulanceScreen}
                 options={{ headerShown: false }}
             />
-            <Main.Screen
-                name="track-ambulance"
-                component={TrackAmbulanceScreen}
-                options={{ headerShown: false }}
-            />
+
+
         </Main.Navigator>
     )
 }
