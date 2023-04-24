@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "emergency-service",
-    "slug": "emergency-service",
+    "name": "esos-client",
+    "slug": "esos-client",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",

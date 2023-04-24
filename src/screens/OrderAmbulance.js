@@ -71,12 +71,15 @@ const OrderAmbulanceScreen = ({ navigation }) => {
                     }
                 }
 
-                await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
+                // TODO: return emergency request id here
+                const res = await axios.post(`${BACKEND_SERVER_IP}/api/emergency/call`, JSON.stringify(data), {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
                     }
                 });
+
+                await AsyncStorage.setItem("@emergency-id", res._id);
 
                 window.alert('Searching for the closest Ambulance')
 
@@ -124,7 +127,6 @@ const OrderAmbulanceScreen = ({ navigation }) => {
                     <Text>₹3000</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button2} onPress={async () => {
-                    // await handleEmergencyCall()
                     const go = await handleEmergencyCall();
                     if (go) navigation.navigate('track-ambulance')
                 }}>
@@ -197,24 +199,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
     },
-    // button2: {
-    //     height: 80,
-    //     width: 300,
-    //     backgroundColor: colors.red,
-    //     borderRadius: 10,
-    //     alignItems: "center",
-    //     justifyContent: "center",
-    //     textAlign: 'center',
-    //     marginHorizontal: 10,
-    //     marginTop: 50,
-    //     padding: 10,
-    //     elevation: 20
-    // },
-    // button2Text: {
-    //     color: 'white',
-    //     fontSize: 25,
-    //     fontWeight: 'bold',
-    // },
     button2: {
         height: 200,
         width: 200,
