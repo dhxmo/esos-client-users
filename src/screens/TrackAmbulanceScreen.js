@@ -29,86 +29,79 @@ const TrackAmbulanceScreen = ({}) => {
   // update using websockets
   const [ambulanceLocation, setAmbulanceLocation] = useState(null);
 
-  const [region, setRegion] = useState({
-    latitude: location ? location.latitude : null,
-    longitude: location ? location.longitude : null,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
-
   const [recording, setRecording] = React.useState();
   const [recordingURI, setRecordingURI] = React.useState('');
   const [isRecording, setIsRecording] = React.useState(false);
 
-  const startRecording = async () => {
-    try {
-      console.log('Requesting permissions..');
-      await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-      console.log('Starting recording..');
+  // const startRecording = async () => {
+  //   try {
+  //     console.log('Requesting permissions..');
+  //     await Audio.requestPermissionsAsync();
+  //     await Audio.setAudioModeAsync({
+  //       allowsRecordingIOS: true,
+  //       playsInSilentModeIOS: true,
+  //     });
+  //     console.log('Starting recording..');
 
-      setIsRecording(true);
-      const recording = new Audio.Recording();
+  //     setIsRecording(true);
+  //     const recording = new Audio.Recording();
 
-      await recording.prepareToRecordAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-      );
+  //     await recording.prepareToRecordAsync(
+  //       Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+  //     );
 
-      await recording.startAsync();
-      setRecording(recording);
+  //     await recording.startAsync();
+  //     setRecording(recording);
 
-      console.log('Recording started');
-    } catch (err) {
-      console.error('Failed to start recording', err);
-    }
-  };
+  //     console.log('Recording started');
+  //   } catch (err) {
+  //     console.error('Failed to start recording', err);
+  //   }
+  // };
 
-  const stopRecording = async () => {
-    console.log('Stopping recording..');
+  // const stopRecording = async () => {
+  //   console.log('Stopping recording..');
 
-    setRecording(undefined);
-    setIsRecording(false);
+  //   setRecording(undefined);
+  //   setIsRecording(false);
 
-    await recording.stopAndUnloadAsync();
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-    });
-    setRecordingURI(recording.getURI());
-    const uri = recording.getURI();
+  //   await recording.stopAndUnloadAsync();
+  //   await Audio.setAudioModeAsync({
+  //     allowsRecordingIOS: false,
+  //   });
+  //   setRecordingURI(recording.getURI());
+  //   const uri = recording.getURI();
 
-    console.log('Recording stopped and stored at', uri);
-  };
+  //   console.log('Recording stopped and stored at', uri);
+  // };
 
-  const handleAudioSend = async () => {
-    const emergency_id = await AsyncStorage.getItem('@emergency-id');
+  // const handleAudioSend = async () => {
+  //   const emergency_id = await AsyncStorage.getItem('@emergency-id');
 
-    const data = {
-      emergencyId: emergency_id,
-      audio: recordingURI,
-    };
+  //   const data = {
+  //     emergencyId: emergency_id,
+  //     audio: recordingURI,
+  //   };
 
-    try {
-      await axios.post(
-        `${BACKEND_SERVER_IP}/api/emergency/audio`,
-        JSON.stringify({ data }),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token,
-          },
-        }
-      );
+  //   try {
+  //     await axios.post(
+  //       `${BACKEND_SERVER_IP}/api/emergency/audio`,
+  //       JSON.stringify({ data }),
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: 'Bearer ' + token,
+  //         },
+  //       }
+  //     );
 
-      window.alert(
-        'audio sent to your paramedic. please take care of your loved ones. The ambulance will be there as soon as possible'
-      );
-    } catch (error) {
-      window.alert('Failed to send audio to server', err);
-    }
-  };
+  //     window.alert(
+  //       'audio sent to your paramedic. please take care of your loved ones. The ambulance will be there as soon as possible'
+  //     );
+  //   } catch (error) {
+  //     window.alert('Failed to send audio to server', err);
+  //   }
+  // };
 
   useEffect(() => {
     // (async () => {
@@ -125,28 +118,19 @@ const TrackAmbulanceScreen = ({}) => {
     //     latitude: destination["latitude"],
     //     longitude: destination["longitude"]
     // })
-    // setRegion({
-    //     latitude: location.latitude,
-    //     longitude: location.longitude,
-    //     latitudeDelta: 0.01,
-    //     longitudeDelta: 0.01,
-    // })
     // })
 
     // Get the GPS data for the ambulance from nodeJS websocket
     // and update the state variables
     // ===ws
 
+    // pull source from @location asyncStorage
     setLocation({
       latitude: 12.9693739,
       longitude: 77.6806338,
     });
-    setRegion({
-      latitude: location.latitude,
-      longitude: location.longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    });
+
+    // get driver location from ambulance client
   }, []);
 
   // TODO: make dynamic
@@ -163,7 +147,12 @@ const TrackAmbulanceScreen = ({}) => {
         customMapStyle={mapStyle}
         showsUserLocation={true}
         followsUserLocation={true}
-        region={region}
+        region={{
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
       >
         {origin.latitude != null && (
           <Marker coordinate={origin} anchor={{ x: 0.5, y: 0.5 }}>

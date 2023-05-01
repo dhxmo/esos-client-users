@@ -29,12 +29,6 @@ const LocationScreen = ({ navigation }) => {
     latitude: null,
     longitude: null,
   });
-  const [region, setRegion] = useState({
-    latitude: location ? location.latitude : null,
-    longitude: location ? location.longitude : null,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
 
   const [loading, setLoading] = useState(true);
 
@@ -85,18 +79,8 @@ const LocationScreen = ({ navigation }) => {
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
-
-      if (location) {
-        setRegion({
-          latitude: location.latitude,
-          longitude: location.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
-        setLoading(false);
-      }
     })();
-  }, [location]);
+  }, []);
 
   const handleLocationConfirm = async () => {
     try {
@@ -212,7 +196,12 @@ const LocationScreen = ({ navigation }) => {
           customMapStyle={mapStyle}
           showsUserLocation={true}
           followsUserLocation={true}
-          region={region}
+          region={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
         />
       </View>
     </View>
@@ -221,8 +210,8 @@ const LocationScreen = ({ navigation }) => {
 
 export default LocationScreen;
 
-export const SCREEN_WIDTH = Dimensions.get('window').width;
-export const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   activityIndicator: {
