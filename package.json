@@ -6,7 +6,8 @@
     "dev": "expo start --tunnel",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "prettier": "prettier --write '**/*.{js,json,md}'"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.11",
@@ -27,12 +28,9 @@
     "expo-notifications": "~0.18.1",
     "expo-status-bar": "~1.4.4",
     "expo-web-browser": "~12.1.1",
-    "fluent-ffmpeg": "^2.1.2",
-    "fs": "^0.0.1-security",
-    "path": "^0.12.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.6",
+    "react-native": "0.71.7",
     "react-native-device-info": "^10.6.0",
     "react-native-dotenv": "^3.4.8",
     "react-native-geolocation-service": "^5.3.1",
@@ -49,7 +47,8 @@
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "eslint": "^8.38.0",
     "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-react-native": "^4.0.0"
+    "eslint-plugin-react-native": "^4.0.0",
+    "prettier": "^2.8.8"
   },
   "private": true
 }

@@ -3,9 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { MainStack } from './StackNavigation';
 
 export default function RootNavigator() {
-    return (
-        <NavigationContainer>
-            <MainStack />
-        </NavigationContainer>
-    )
+  return (
+    <NavigationContainer>
+      <MainStack />
+    </NavigationContainer>
+  );
 }
