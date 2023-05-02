@@ -1,20 +1,61 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import React, { useState } from 'react';
 import cross from '../../assets/redCross.png';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { btn } from '../globals/style';
+import { parameters, colors } from '../globals/style';
 import DropDownPicker from 'react-native-dropdown-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SelectHospitalScreen = () => {
-  const [closest, setClosest] = useState(null);
-  const [selected, setSelected] = useState(null);
+const SELECTED_TYPE = {
+  CLOSEST: 'closest',
+  SPECIFIC: 'specific',
+};
+
+const SelectHospitalScreen = ({ navigation }) => {
+  const [selected, setSelected] = useState('');
 
   const [open, setOpen] = useState(false);
-  const [ambulanceType, setAmbulanceType] = useState('');
+  const [hospitalName, setHospitalName] = useState('');
+
   const [items, setItems] = useState([
-    { label: 'Advanced Life Support', value: 'ALS' },
-    { label: 'Basic Life Support', value: 'BLS' },
+    { label: 'hospital name', value: 'hospital id' },
   ]);
+
+  const handleSelect = (value) => {
+    if (value === SELECTED_TYPE.CLOSEST) {
+      setSelected(SELECTED_TYPE.CLOSEST);
+    } else if (value === SELECTED_TYPE.SPECIFIC) {
+      setSelected(SELECTED_TYPE.SPECIFIC);
+    }
+  };
+
+  // on selecting specific hospital
+  // ping hospitals list for city
+  // populate items
+  const findSpecificHospitals = async () => {};
+
+  const handleHospitalSelection = async () => {
+    try {
+      if (value === SELECTED_TYPE.CLOSEST) {
+        await AsyncStorage.setItem('@closestHospital?', true);
+      } else if (value === SELECTED_TYPE.SPECIFIC) {
+        await AsyncStorage.setItem('@closestHospital?', false);
+        await AsyncStorage.setItem('@hospitalName', hospitalName);
+        await AsyncStorage.setItem('@hospitalID', hospitalID);
+        // find id from list of items and store in async storage
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -29,25 +70,39 @@ const SelectHospitalScreen = () => {
       <View style={styles.header}>
         <Image style={styles.img} source={cross} />
       </View>
-      <View>
+      <View style={styles.title}>
+        <Text style={styles.titleText}>esos</Text>
+      </View>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={btn}
+          style={[
+            styles.btn,
+            selected === SELECTED_TYPE.CLOSEST && {
+              backgroundColor: colors.red,
+            },
+          ]}
           onPress={() => {
-            navigation.navigate('order-ambulance');
+            handleSelect(SELECTED_TYPE.CLOSEST);
           }}
         >
-          <Text style={styles.text}>closest hospital</Text>
+          <Text style={styles.buttonText}>closest hospital</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={btn}
-          onPress={() => {
-            navigation.navigate('order-ambulance');
+          style={[
+            styles.btn,
+            selected === SELECTED_TYPE.SPECIFIC && {
+              backgroundColor: colors.red,
+            },
+          ]}
+          onPress={async () => {
+            handleSelect(SELECTED_TYPE.SPECIFIC);
+            await findSpecificHospitals();
           }}
         >
-          <Text style={styles.text}>select specific hospital</Text>
+          <Text style={styles.buttonText}>select specific hospital</Text>
         </TouchableOpacity>
-        {selected && (
+        {selected === 'specific' && (
           <TouchableOpacity>
             <DropDownPicker
               open={open}
@@ -55,8 +110,8 @@ const SelectHospitalScreen = () => {
               items={items}
               setItems={setItems}
               zIndex={2000}
-              value={ambulanceType}
-              setValue={setAmbulanceType}
+              value={hospitalName}
+              setValue={setHospitalName}
               containerStyle={{ height: 40 }}
               style={styles.dropDown}
               itemStyle={{
@@ -66,6 +121,17 @@ const SelectHospitalScreen = () => {
             />
           </TouchableOpacity>
         )}
+
+        <TouchableOpacity
+          style={styles.button2}
+          onPress={async () => {
+            const go = await handleHospitalSelection();
+            if (go) navigation.navigate('order-ambulance');
+            // navigation.navigate('order-ambulance');
+          }}
+        >
+          <Text style={styles.button2Text}>next</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -73,7 +139,6 @@ const SelectHospitalScreen = () => {
 
 export default SelectHospitalScreen;
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
@@ -81,6 +146,14 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     height: SCREEN_HEIGHT,
     backgroundColor: '#FFFFFF',
+  },
+  title: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  titleText: {
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   backIcon: {
     position: 'absolute',
@@ -98,5 +171,54 @@ const styles = StyleSheet.create({
     height: '100%',
     marginTop: 50,
     resizeMode: 'contain',
+  },
+  btn: {
+    width: 250,
+    height: 70,
+    backgroundColor: colors.white,
+    color: colors.red,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 10,
+    margin: 10,
+    marginVertical: 20,
+    padding: 20,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 30,
+  },
+  buttonText: {
+    color: colors.grey,
+    fontSize: 20,
+  },
+  dropDown: {
+    width: '80%',
+    marginVertical: 20,
+  },
+  dropDownStyleContainer: {
+    width: '80%',
+    marginBottom: 30,
+  },
+  button2: {
+    height: 160,
+    width: 160,
+    backgroundColor: colors.red,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    marginHorizontal: 10,
+    marginTop: 50,
+    padding: 10,
+    elevation: 20,
+  },
+  button2Text: {
+    color: colors.white,
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

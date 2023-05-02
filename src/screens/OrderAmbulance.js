@@ -130,7 +130,7 @@ const OrderAmbulanceScreen = ({ navigation }) => {
           ]}
         >
           <Text style={styles.button1Text}>Basic Life Support</Text>
-          <Text>Small Injuries</Text>
+          <Text>General Patient Transport</Text>
           <Text>₹1500</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -143,7 +143,7 @@ const OrderAmbulanceScreen = ({ navigation }) => {
           ]}
         >
           <Text style={styles.button1Text}>Advanced Life Support</Text>
-          <Text>Heart Attack, Stroke</Text>
+          <Text>Heart Attack, Stroke, Accident</Text>
           <Text>₹3000</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
   button1Text: {
-    color: colors.darkGrey,
+    color: colors.grey,
     fontSize: 20,
     textAlign: 'center',
     fontWeight: 'bold',
