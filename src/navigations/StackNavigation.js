@@ -4,6 +4,7 @@ import LocationScreen from '../screens/LocationScreen';
 import TrackAmbulanceScreen from '../screens/TrackAmbulanceScreen';
 import OrderAmbulanceScreen from '../screens/OrderAmbulance';
 import HomeScreen from '../screens/HomeScreen';
+import SelectHospitalScreen from '../screens/SelectHospitalScreen';
 
 const Main = createNativeStackNavigator();
 
@@ -18,6 +19,11 @@ export function MainStack() {
       <Main.Screen
         name="location"
         component={LocationScreen}
+        options={{ headerShown: false }}
+      />
+      <Main.Screen
+        name="select-hospital"
+        component={SelectHospitalScreen}
         options={{ headerShown: false }}
       />
       <Main.Screen

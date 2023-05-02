@@ -179,7 +179,7 @@ const LocationScreen = ({ navigation }) => {
           onPress={() => {
             const go = handleLocationConfirm();
             if (go) {
-              navigation.navigate('order-ambulance');
+              navigation.navigate('select-hospital');
             }
           }}
           style={btn}
