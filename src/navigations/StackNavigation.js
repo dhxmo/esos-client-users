@@ -12,11 +12,6 @@ export function MainStack() {
   return (
     <Main.Navigator>
       <Main.Screen
-        name="select-hospital"
-        component={SelectHospitalScreen}
-        options={{ headerShown: false }}
-      />
-      <Main.Screen
         name="home"
         component={HomeScreen}
         options={{ headerShown: false }}
@@ -26,11 +21,11 @@ export function MainStack() {
         component={LocationScreen}
         options={{ headerShown: false }}
       />
-      {/* <Main.Screen
+      <Main.Screen
         name="select-hospital"
         component={SelectHospitalScreen}
         options={{ headerShown: false }}
-      /> */}
+      />
       <Main.Screen
         name="order-ambulance"
         component={OrderAmbulanceScreen}

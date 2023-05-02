@@ -177,10 +177,11 @@ const LocationScreen = ({ navigation }) => {
 
         <TouchableOpacity
           onPress={() => {
-            const go = handleLocationConfirm();
-            if (go) {
-              navigation.navigate('select-hospital');
-            }
+            // const go = handleLocationConfirm();
+            // if (go) {
+            //   navigation.navigate('select-hospital');
+            // }
+            navigation.navigate('select-hospital');
           }}
           style={btn}
         >

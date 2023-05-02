@@ -95,7 +95,13 @@ const HomeScreen = ({ navigation }) => {
 
         {!sendOTP && (
           <View>
-            <TouchableOpacity style={btn} onPress={() => handleSendOTP()}>
+            <TouchableOpacity
+              style={btn}
+              onPress={() => {
+                // handleSendOTP()
+                navigation.navigate('location');
+              }}
+            >
               <Text style={styles.text}>Send OTP</Text>
             </TouchableOpacity>
           </View>
@@ -115,10 +121,11 @@ const HomeScreen = ({ navigation }) => {
             <TouchableOpacity
               style={btn}
               onPress={() => {
-                const go = handleVerifyOTP();
-                if (go) {
-                  navigation.navigate('location');
-                }
+                // const go = handleVerifyOTP();
+                // if (go) {
+                //   navigation.navigate('location');
+                // }
+                navigation.navigate('location');
               }}
             >
               <Text style={styles.text}>Verify OTP</Text>

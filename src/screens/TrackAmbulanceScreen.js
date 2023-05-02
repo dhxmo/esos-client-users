@@ -33,75 +33,75 @@ const TrackAmbulanceScreen = ({}) => {
   const [recordingURI, setRecordingURI] = React.useState('');
   const [isRecording, setIsRecording] = React.useState(false);
 
-  // const startRecording = async () => {
-  //   try {
-  //     console.log('Requesting permissions..');
-  //     await Audio.requestPermissionsAsync();
-  //     await Audio.setAudioModeAsync({
-  //       allowsRecordingIOS: true,
-  //       playsInSilentModeIOS: true,
-  //     });
-  //     console.log('Starting recording..');
+  const startRecording = async () => {
+    try {
+      console.log('Requesting permissions..');
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+      console.log('Starting recording..');
 
-  //     setIsRecording(true);
-  //     const recording = new Audio.Recording();
+      setIsRecording(true);
+      const recording = new Audio.Recording();
 
-  //     await recording.prepareToRecordAsync(
-  //       Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-  //     );
+      await recording.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
 
-  //     await recording.startAsync();
-  //     setRecording(recording);
+      await recording.startAsync();
+      setRecording(recording);
 
-  //     console.log('Recording started');
-  //   } catch (err) {
-  //     console.error('Failed to start recording', err);
-  //   }
-  // };
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  };
 
-  // const stopRecording = async () => {
-  //   console.log('Stopping recording..');
+  const stopRecording = async () => {
+    console.log('Stopping recording..');
 
-  //   setRecording(undefined);
-  //   setIsRecording(false);
+    setRecording(undefined);
+    setIsRecording(false);
 
-  //   await recording.stopAndUnloadAsync();
-  //   await Audio.setAudioModeAsync({
-  //     allowsRecordingIOS: false,
-  //   });
-  //   setRecordingURI(recording.getURI());
-  //   const uri = recording.getURI();
+    await recording.stopAndUnloadAsync();
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+    });
+    setRecordingURI(recording.getURI());
+    const uri = recording.getURI();
 
-  //   console.log('Recording stopped and stored at', uri);
-  // };
+    console.log('Recording stopped and stored at', uri);
+  };
 
-  // const handleAudioSend = async () => {
-  //   const emergency_id = await AsyncStorage.getItem('@emergency-id');
+  const handleAudioSend = async () => {
+    const emergency_id = await AsyncStorage.getItem('@emergency-id');
 
-  //   const data = {
-  //     emergencyId: emergency_id,
-  //     audio: recordingURI,
-  //   };
+    const data = {
+      emergencyId: emergency_id,
+      audio: recordingURI,
+    };
 
-  //   try {
-  //     await axios.post(
-  //       `${BACKEND_SERVER_IP}/api/emergency/audio`,
-  //       JSON.stringify({ data }),
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: 'Bearer ' + token,
-  //         },
-  //       }
-  //     );
+    try {
+      await axios.post(
+        `${BACKEND_SERVER_IP}/api/emergency/audio`,
+        JSON.stringify({ data }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token,
+          },
+        }
+      );
 
-  //     window.alert(
-  //       'audio sent to your paramedic. please take care of your loved ones. The ambulance will be there as soon as possible'
-  //     );
-  //   } catch (error) {
-  //     window.alert('Failed to send audio to server', err);
-  //   }
-  // };
+      window.alert(
+        'audio sent to your paramedic. please take care of your loved ones. The ambulance will be there as soon as possible'
+      );
+    } catch (error) {
+      window.alert('Failed to send audio to server', err);
+    }
+  };
 
   useEffect(() => {
     // (async () => {
@@ -181,7 +181,7 @@ const TrackAmbulanceScreen = ({}) => {
         />
       </MapView>
 
-      {/* TODO: container here to record audio and send to paramedic  */}
+      {/* TODO: change to record when press button. once recording done. send button. if no recording say, record something. on recording add animation */}
       <View style={styles.audioContainer}>
         <Text styles={styles.audioContainerText}>
           Please record a quick voice note about the patient's condition for

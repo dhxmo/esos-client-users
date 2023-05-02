@@ -47,7 +47,6 @@ const SelectHospitalScreen = ({ navigation }) => {
         await AsyncStorage.setItem('@closestHospital?', true);
       } else if (value === SELECTED_TYPE.SPECIFIC) {
         await AsyncStorage.setItem('@closestHospital?', false);
-        await AsyncStorage.setItem('@hospitalName', hospitalName);
         await AsyncStorage.setItem('@hospitalID', hospitalID);
         // find id from list of items and store in async storage
       }
@@ -125,12 +124,14 @@ const SelectHospitalScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.button2}
           onPress={async () => {
-            const go = await handleHospitalSelection();
-            if (go) navigation.navigate('order-ambulance');
-            // navigation.navigate('order-ambulance');
+            // const go = await handleHospitalSelection();
+            // if (go) {
+            //   navigation.navigate('order-ambulance');
+            // }
+            navigation.navigate('order-ambulance');
           }}
         >
-          <Text style={styles.button2Text}>next</Text>
+          <Text style={styles.button2Text}>confirm hospital</Text>
         </TouchableOpacity>
       </View>
     </View>

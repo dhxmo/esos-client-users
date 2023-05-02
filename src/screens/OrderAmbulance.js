@@ -149,8 +149,11 @@ const OrderAmbulanceScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.button2}
           onPress={async () => {
-            const go = await handleEmergencyCall();
-            if (go) navigation.navigate('track-ambulance');
+            // const go = await handleEmergencyCall();
+            // if (go) {
+            //   navigation.navigate('track-ambulance');
+            // }
+            navigation.navigate('track-ambulance');
           }}
         >
           <Text style={styles.button2Text}>Request Ambulance</Text>
