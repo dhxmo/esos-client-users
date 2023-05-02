@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import cross from '../../assets/redCross.png';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { parameters, colors } from '../globals/style';
@@ -22,11 +22,9 @@ const SelectHospitalScreen = ({ navigation }) => {
   const [selected, setSelected] = useState('');
 
   const [open, setOpen] = useState(false);
-  const [hospitalName, setHospitalName] = useState('');
+  const [hospitalID, setHospitalID] = useState('');
 
-  const [items, setItems] = useState([
-    { label: 'hospital name', value: 'hospital id' },
-  ]);
+  const [items, setItems] = useState([]);
 
   const handleSelect = (value) => {
     if (value === SELECTED_TYPE.CLOSEST) {
@@ -36,10 +34,40 @@ const SelectHospitalScreen = ({ navigation }) => {
     }
   };
 
-  // on selecting specific hospital
-  // ping hospitals list for city
-  // populate items
-  const findSpecificHospitals = async () => {};
+  const findSpecificHospitals = async () => {
+    let hospitals = [];
+    try {
+      const token = await AsyncStorage.getItem('@sessionToken');
+      const city = await AsyncStorage.getItem('@city');
+
+      const res = await axios.get(
+        `${BACKEND_SERVER_IP}/api/hospitals/get-all-available`,
+        JSON.stringify(city),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token,
+          },
+        }
+      );
+
+      // update items
+      const listOfAvailableHospitals = res.message;
+      for (let i = 0; i < listOfAvailableHospitals.length; i++) {
+        hospitals.push({
+          label: listOfAvailableHospitals[i].name,
+          value: listOfAvailableHospitals[i]._id,
+        });
+      }
+
+      setItems(hospitals);
+
+      return true;
+    } catch (error) {
+      window.alert(error);
+      return false;
+    }
+  };
 
   const handleHospitalSelection = async () => {
     try {
@@ -109,8 +137,8 @@ const SelectHospitalScreen = ({ navigation }) => {
               items={items}
               setItems={setItems}
               zIndex={2000}
-              value={hospitalName}
-              setValue={setHospitalName}
+              value={hospitalID}
+              setValue={setHospitalID}
               containerStyle={{ height: 40 }}
               style={styles.dropDown}
               itemStyle={{
@@ -118,6 +146,7 @@ const SelectHospitalScreen = ({ navigation }) => {
               }}
               dropDownContainerStyle={styles.dropDownStyleContainer}
             />
+            console.log(hospitalID);
           </TouchableOpacity>
         )}
 
@@ -192,7 +221,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   buttonText: {
-    color: colors.grey,
+    color: colors.darkGrey,
     fontSize: 20,
   },
   dropDown: {
@@ -218,7 +247,7 @@ const styles = StyleSheet.create({
   },
   button2Text: {
     color: colors.white,
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
     textAlign: 'center',
   },

@@ -26,7 +26,7 @@ const TrackAmbulanceScreen = ({}) => {
     latitude: null,
     longitude: null,
   });
-  // update using websockets
+  // update using websockets from driver client
   const [ambulanceLocation, setAmbulanceLocation] = useState(null);
 
   const [recording, setRecording] = React.useState();
@@ -138,6 +138,8 @@ const TrackAmbulanceScreen = ({}) => {
   const origin = { latitude: 12.9693739, longitude: 77.6806338 };
   const ambulance = { latitude: 12.9593639, longitude: 77.6706238 };
 
+  //  TODO: set loading until the assigned driver's location has not been updated on the map
+
   return (
     <View style={styles.container}>
       {/* TODO: load the source and destination, not the whole world */}
@@ -182,6 +184,7 @@ const TrackAmbulanceScreen = ({}) => {
       </MapView>
 
       {/* TODO: change to record when press button. once recording done. send button. if no recording say, record something. on recording add animation */}
+      {/* TODO: instead of audio, do a proper input with text/audio/photo. send directly to driver, create a mini chat app inside */}
       <View style={styles.audioContainer}>
         <Text styles={styles.audioContainerText}>
           Please record a quick voice note about the patient's condition for

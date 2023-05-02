@@ -130,8 +130,8 @@ const OrderAmbulanceScreen = ({ navigation }) => {
           ]}
         >
           <Text style={styles.button1Text}>Basic Life Support</Text>
-          <Text>General Patient Transport</Text>
-          <Text>₹1500</Text>
+          <Text style={styles.buttonMiniText}>General Patient Transport</Text>
+          <Text style={styles.buttonMiniText}>₹1500</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => handleSelect(SUPPORT_TYPE.ADVANCED)}
@@ -143,8 +143,10 @@ const OrderAmbulanceScreen = ({ navigation }) => {
           ]}
         >
           <Text style={styles.button1Text}>Advanced Life Support</Text>
-          <Text>Heart Attack, Stroke, Accident</Text>
-          <Text>₹3000</Text>
+          <Text style={styles.buttonMiniText}>
+            Heart Attack, Stroke, Accident
+          </Text>
+          <Text style={styles.buttonMiniText}>₹3000</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button2}
@@ -220,10 +222,13 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
   button1Text: {
-    color: colors.grey,
+    color: colors.darkGrey,
     fontSize: 20,
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  buttonMiniText: {
+    color: colors.grey,
   },
   button2: {
     height: 200,

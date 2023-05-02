@@ -69,10 +69,14 @@ const LocationScreen = ({ navigation }) => {
           accuracy: Location.Accuracy.Highest,
         });
         if (loc.coords.latitude && loc.coords.longitude) {
+          const address = await Location.reverseGeocodeAsync(loc.coords);
+          await AsyncStorage.setItem('@city', address[0].city);
+
           setLocation({
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
           });
+
           setLoading(false);
         } else {
           // Wait for a second before retrying
@@ -177,11 +181,10 @@ const LocationScreen = ({ navigation }) => {
 
         <TouchableOpacity
           onPress={() => {
-            // const go = handleLocationConfirm();
-            // if (go) {
-            //   navigation.navigate('select-hospital');
-            // }
-            navigation.navigate('select-hospital');
+            const go = handleLocationConfirm();
+            if (go) {
+              navigation.navigate('select-hospital');
+            }
           }}
           style={btn}
         >
