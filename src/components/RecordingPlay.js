@@ -9,19 +9,23 @@ import {
 } from 'react-native';
 import { colors } from '../globals/style';
 
-export const RecordingPlay = ({ uri }) => {
+export const RecordingPlay = ({ recording }) => {
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      await loadSound();
-    })();
-  }, []);
+    if (recording && recording.data) {
+      (async () => {
+        await loadSound();
+      })();
+    }
+  }, [recording]);
 
   const loadSound = async () => {
     try {
-      const { sound: newSound } = await Audio.Sound.createAsync({ uri });
+      const { sound: newSound } = await Audio.Sound.createAsync({
+        uri: recording.data,
+      });
       setSound(newSound);
     } catch (err) {
       console.error('Failed to load sound', err);
@@ -48,7 +52,7 @@ export const RecordingPlay = ({ uri }) => {
     }
   };
 
-  if (!sound) {
+  if (!recording || !recording.data || !sound) {
     return <ActivityIndicator />;
   }
 
@@ -58,7 +62,6 @@ export const RecordingPlay = ({ uri }) => {
         onPress={async () => {
           isPlaying ? await stopSound() : await playSound();
         }}
-        // disabled={!sound || sound.isLoaded() === false}
         style={styles.button}
       >
         {isPlaying ? (

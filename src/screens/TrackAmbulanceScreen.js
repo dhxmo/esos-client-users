@@ -49,6 +49,29 @@ const TrackAmbulanceScreen = ({}) => {
     setText(value);
   };
 
+  const recordingOptions = {
+    android: {
+      extension: '.m4a',
+      outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+      audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+      sampleRate: 44100,
+      numberOfChannels: 2,
+      bitRate: 128000,
+      maxDuration: 60, // set max duration to 60 seconds
+    },
+    ios: {
+      extension: '.caf',
+      audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+      sampleRate: 44100,
+      numberOfChannels: 2,
+      bitRate: 128000,
+      linearPCMBitDepth: 16,
+      linearPCMIsBigEndian: false,
+      linearPCMIsFloat: false,
+      maxDuration: 60, // set max duration to 60 seconds
+    },
+  };
+
   const handleAudioRecord = async () => {
     try {
       console.log('Requesting permissions..');
@@ -66,7 +89,8 @@ const TrackAmbulanceScreen = ({}) => {
 
       const newRecording = new Audio.Recording();
       await newRecording.prepareToRecordAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+        recordingOptions
+        // Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
       );
       await newRecording.startAsync();
       setRecording(newRecording);
@@ -91,14 +115,23 @@ const TrackAmbulanceScreen = ({}) => {
     setRecordingURI(uri);
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    const response = await fetch(recordingURI);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBlob = new Blob([arrayBuffer], { type: 'audio/3gpp' });
+
     const message = {
       type: 'chat',
       text,
       recording: {
         uri: recordingURI,
+        blob: audioBlob,
       },
     };
+
+    if (ws) {
+      ws.send(JSON.stringify(message));
+    }
 
     setChatMessages([...chatMessages, message]);
 
@@ -133,30 +166,40 @@ const TrackAmbulanceScreen = ({}) => {
     })();
 
     // establish websocket connection
-    // const ws = new WebSocket(`ws://${BACKEND_SERVER_IP}/websocket`);
+    const ws = new WebSocket(`ws://${BACKEND_SERVER_IP}/websocket`);
 
-    // ws.addEventListener('open', () => {
-    //   console.log('WebSocket connection established.');
-    // });
+    ws.addEventListener('open', () => {
+      console.log('WebSocket connection established.');
+    });
 
-    // ws.addEventListener('message', (event) => {
-    //   const message = JSON.parse(event.data);
-    //   switch (message.type) {
-    //     case 'chat':
-    //       setChatMessages((messages) => [...messages, message]);
-    //     case 'locationUpdate':
-    //       setAmbulanceLocation({
-    //         longitude: message.longitude,
-    //         latitude: message.latitude,
-    //       });
-    //   }
-    // });
+    // TODO: websocket send chats
+    // TODO: fix this and test back n forth chats being passed as well as the audio blob
+    ws.addEventListener('message', (event) => {
+      const message = JSON.parse(event.data);
+      switch (message.type) {
+        case 'chat':
+          if (message.recording && message.recording.blob) {
+            const audioData = URL.createObjectURL(message.recording.blob);
+            message.recording.data = audioData;
+          }
+          setChatMessages((messages) => [...messages, message]);
+          break;
+        case 'locationUpdate':
+          setAmbulanceLocation({
+            longitude: message.longitude,
+            latitude: message.latitude,
+          });
+          break;
+        default:
+          console.log('Unknown message type:', message.type);
+      }
+    });
 
-    // setWs(ws);
+    setWs(ws);
 
-    // return () => {
-    //   ws.close();
-    // };
+    return () => {
+      ws.close();
+    };
   }, []);
 
   if (loading) {
@@ -214,7 +257,7 @@ const TrackAmbulanceScreen = ({}) => {
           {chatMessages.map((message, index) => (
             <View style={styles.msgContainer} key={index}>
               {message.recording?.uri ? (
-                <RecordingPlay uri={message.recording.uri} />
+                <RecordingPlay uri={message.recording} />
               ) : (
                 <Text style={styles.msgText}>{message.text}</Text>
               )}
