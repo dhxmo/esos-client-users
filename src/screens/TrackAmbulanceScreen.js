@@ -3,11 +3,9 @@ import {
   StyleSheet,
   Dimensions,
   Image,
-  Button,
   TouchableOpacity,
   Text,
-  Animated,
-  FileSystem,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
@@ -17,93 +15,20 @@ import { BACKEND_SERVER_IP, GOOGLE_MAPS_API } from '../config/variables';
 import { colors } from '../globals/style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ChatPopup } from '../components/ChatPopUp.component';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { Audio } from 'expo-av';
 
 const locationMarker = require('../../assets/location.png');
 const ambulanceMarker = require('../../assets/ambulance.png');
 
 const TrackAmbulanceScreen = ({}) => {
-  const [location, setLocation] = useState({
+  const [patientLocation, setPatientLocation] = useState({
     latitude: null,
     longitude: null,
   });
-  // update using websockets from driver client
-  const [ambulanceLocation, setAmbulanceLocation] = useState(null);
-
-  // const [recording, setRecording] = React.useState();
-  // const [recordingURI, setRecordingURI] = React.useState('');
-  // const [isRecording, setIsRecording] = React.useState(false);
-
-  // const startRecording = async () => {
-  //   try {
-  //     console.log('Requesting permissions..');
-  //     await Audio.requestPermissionsAsync();
-  //     await Audio.setAudioModeAsync({
-  //       allowsRecordingIOS: true,
-  //       playsInSilentModeIOS: true,
-  //     });
-  //     console.log('Starting recording..');
-
-  //     setIsRecording(true);
-  //     const recording = new Audio.Recording();
-
-  //     await recording.prepareToRecordAsync(
-  //       Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-  //     );
-
-  //     await recording.startAsync();
-  //     setRecording(recording);
-
-  //     console.log('Recording started');
-  //   } catch (err) {
-  //     console.error('Failed to start recording', err);
-  //   }
-  // };
-
-  // const stopRecording = async () => {
-  //   console.log('Stopping recording..');
-
-  //   setRecording(undefined);
-  //   setIsRecording(false);
-
-  //   await recording.stopAndUnloadAsync();
-  //   await Audio.setAudioModeAsync({
-  //     allowsRecordingIOS: false,
-  //   });
-  //   setRecordingURI(recording.getURI());
-  //   const uri = recording.getURI();
-
-  //   console.log('Recording stopped and stored at', uri);
-  // };
-
-  // const handleAudioSend = async () => {
-  //   const emergency_id = await AsyncStorage.getItem('@emergency-id');
-
-  //   const data = {
-  //     emergencyId: emergency_id,
-  //     audio: recordingURI,
-  //   };
-
-  //   try {
-  //     await axios.post(
-  //       `${BACKEND_SERVER_IP}/api/emergency/audio`,
-  //       JSON.stringify({ data }),
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: 'Bearer ' + token,
-  //         },
-  //       }
-  //     );
-
-  //     window.alert(
-  //       'audio sent to your paramedic. please take care of your loved ones. The ambulance will be there as soon as possible'
-  //     );
-  //   } catch (error) {
-  //     window.alert('Failed to send audio to server', err);
-  //   }
-  // };
+  const [ambulanceLocation, setAmbulanceLocation] = useState({
+    latitude: null,
+    longitude: null,
+  });
+  const [loading, setLoading] = useState(true);
 
   const [chatVisible, setChatVisible] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
@@ -124,33 +49,22 @@ const TrackAmbulanceScreen = ({}) => {
   };
 
   useEffect(() => {
-    // (async () => {
-    // const destinationLocation = await AsyncStorage.getItem("@location");
+    async () => {
+      const destinationLocation = await AsyncStorage.getItem('@location');
 
-    // const destinationLocationParsed = JSON.parse(destinationLocation);
+      const destinationLocationParsed = JSON.parse(destinationLocation);
 
-    // const destination = {
-    //     latitude: destinationLocationParsed["latitude"],
-    //     longitude: destinationLocationParsed["longitude"]
-    // }
+      const destination = {
+        latitude: destinationLocationParsed['latitude'],
+        longitude: destinationLocationParsed['longitude'],
+      };
 
-    // setLocation({
-    //     latitude: destination["latitude"],
-    //     longitude: destination["longitude"]
-    // })
-    // })
-
-    // Get the GPS data for the ambulance from nodeJS websocket
-    // and update the state variables
-    // ===ws
-
-    // pull source from @location asyncStorage
-    setLocation({
-      latitude: 12.9693739,
-      longitude: 77.6806338,
-    });
-
-    // get driver location from ambulance client
+      setPatientLocation({
+        latitude: destination['latitude'],
+        longitude: destination['longitude'],
+      });
+      setLoading(false);
+    };
 
     // establish websocket connection
     const ws = new WebSocket(`ws://${BACKEND_SERVER_IP}/websocket`);
@@ -161,8 +75,14 @@ const TrackAmbulanceScreen = ({}) => {
 
     ws.addEventListener('message', (event) => {
       const message = JSON.parse(event.data);
-      if (message.type === 'chat') {
-        setChatMessages((messages) => [...messages, message]);
+      switch (message.type) {
+        case 'chat':
+          setChatMessages((messages) => [...messages, message]);
+        case 'locationUpdate':
+          setAmbulanceLocation({
+            longitude: message.longitude,
+            latitude: message.latitude,
+          });
       }
     });
 
@@ -173,16 +93,16 @@ const TrackAmbulanceScreen = ({}) => {
     };
   }, []);
 
-  // TODO: make dynamic
-
-  const origin = { latitude: 12.9693739, longitude: 77.6806338 };
-  const ambulance = { latitude: 12.9593639, longitude: 77.6706238 };
-
-  //  TODO: set loading until the assigned driver's location has not been updated on the map
+  if (loading) {
+    return (
+      <View style={styles.activityIndicator}>
+        <ActivityIndicator size="large" color="#BE0000" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* TODO: load the source and destination, not the whole world */}
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
@@ -197,7 +117,7 @@ const TrackAmbulanceScreen = ({}) => {
         }}
       >
         {origin.latitude != null && (
-          <Marker coordinate={origin} anchor={{ x: 0.5, y: 0.5 }}>
+          <Marker coordinate={patientLocation} anchor={{ x: 0.5, y: 0.5 }}>
             <Image
               source={locationMarker}
               style={styles.markerOrigin1}
@@ -206,7 +126,7 @@ const TrackAmbulanceScreen = ({}) => {
           </Marker>
         )}
         {ambulance.latitude != null && (
-          <Marker coordinate={ambulance} anchor={{ x: 0.5, y: 0.5 }}>
+          <Marker coordinate={ambulanceLocation} anchor={{ x: 0.5, y: 0.5 }}>
             <Image
               source={ambulanceMarker}
               style={styles.markerOrigin2}
@@ -215,39 +135,13 @@ const TrackAmbulanceScreen = ({}) => {
           </Marker>
         )}
         <MapViewDirections
-          origin={origin}
-          destination={ambulance}
+          origin={patientLocation}
+          destination={ambulanceLocation}
           apikey={GOOGLE_MAPS_API}
           strokeWidth={4}
           strokeColor={colors.red}
         />
       </MapView>
-
-      {/* TODO: instead of audio, do a proper input with text/audio/photo. send directly to driver, create a mini chat app inside
-      <View style={styles.audioContainer}>
-        <Text styles={styles.audioContainerText}>
-          Please record a quick voice note about the patient's condition for
-          your paramedic
-        </Text>
-
-        {isRecording && (
-          <Text style={styles.audioContainerText}>recording...</Text>
-        )}
-        <TouchableOpacity
-          title={recording ? 'Stop Recording' : 'Start Recording'}
-          onPress={recording ? stopRecording : startRecording}
-          style={styles.innerButton}
-        >
-          <View style={styles.innerButton2}></View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.sendBtn}
-          onPress={() => handleAudioSend()}
-        >
-          <Text style={styles.sendBtnText}>Send</Text>
-        </TouchableOpacity>
-      </View> */}
 
       <View style={styles.audioContainer}>
         <TouchableOpacity onPress={handleChatOpen}>
@@ -270,8 +164,8 @@ const TrackAmbulanceScreen = ({}) => {
 
 export default TrackAmbulanceScreen;
 
-export const SCREEN_WIDTH = Dimensions.get('window').width;
-export const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   container: {
@@ -310,14 +204,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-  },
-  soundWave: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'white',
-    opacity: 0.5,
   },
   audioContainerText: {
     textAlign: 'center',

@@ -50,7 +50,7 @@ const ChatPopup = ({ visible, onClose, onSend }) => {
   };
 
   const handleCameraSelect = async () => {
-    const { status } = await Camera.requestPermissionsAsync();
+    const { status } = await Camera.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       alert('Sorry, we need camera permissions to make this work!');
       return;
