@@ -9,4 +9,5 @@ export default function App() {
   );
 }
 
+// TODO: add proper fonts
 // TODO: on logout, remove all async storage stuff, stopLocationUpdates
