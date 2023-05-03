@@ -131,7 +131,6 @@ const OrderAmbulanceScreen = ({ navigation }) => {
         >
           <Text style={styles.button1Text}>Basic Life Support</Text>
           <Text style={styles.buttonMiniText}>General Patient Transport</Text>
-          <Text style={styles.buttonMiniText}>₹1500</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => handleSelect(SUPPORT_TYPE.ADVANCED)}
@@ -146,7 +145,6 @@ const OrderAmbulanceScreen = ({ navigation }) => {
           <Text style={styles.buttonMiniText}>
             Heart Attack, Stroke, Accident
           </Text>
-          <Text style={styles.buttonMiniText}>₹3000</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button2}
