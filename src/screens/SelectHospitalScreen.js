@@ -51,7 +51,6 @@ const SelectHospitalScreen = ({ navigation }) => {
         }
       );
 
-      // update items
       const listOfAvailableHospitals = res.message;
       for (let i = 0; i < listOfAvailableHospitals.length; i++) {
         hospitals.push({

@@ -15,8 +15,10 @@ import { mapStyle } from '../globals/mapStyle';
 import MapViewDirections from 'react-native-maps-directions';
 import { BACKEND_SERVER_IP, GOOGLE_MAPS_API } from '../config/variables';
 import { colors } from '../globals/style';
-import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ChatPopup } from '../components/ChatPopUp.component';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { Audio } from 'expo-av';
 
 const locationMarker = require('../../assets/location.png');
 const ambulanceMarker = require('../../assets/ambulance.png');
@@ -29,77 +31,95 @@ const TrackAmbulanceScreen = ({}) => {
   // update using websockets from driver client
   const [ambulanceLocation, setAmbulanceLocation] = useState(null);
 
-  const [recording, setRecording] = React.useState();
-  const [recordingURI, setRecordingURI] = React.useState('');
-  const [isRecording, setIsRecording] = React.useState(false);
+  // const [recording, setRecording] = React.useState();
+  // const [recordingURI, setRecordingURI] = React.useState('');
+  // const [isRecording, setIsRecording] = React.useState(false);
 
-  const startRecording = async () => {
-    try {
-      console.log('Requesting permissions..');
-      await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-      console.log('Starting recording..');
+  // const startRecording = async () => {
+  //   try {
+  //     console.log('Requesting permissions..');
+  //     await Audio.requestPermissionsAsync();
+  //     await Audio.setAudioModeAsync({
+  //       allowsRecordingIOS: true,
+  //       playsInSilentModeIOS: true,
+  //     });
+  //     console.log('Starting recording..');
 
-      setIsRecording(true);
-      const recording = new Audio.Recording();
+  //     setIsRecording(true);
+  //     const recording = new Audio.Recording();
 
-      await recording.prepareToRecordAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-      );
+  //     await recording.prepareToRecordAsync(
+  //       Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+  //     );
 
-      await recording.startAsync();
-      setRecording(recording);
+  //     await recording.startAsync();
+  //     setRecording(recording);
 
-      console.log('Recording started');
-    } catch (err) {
-      console.error('Failed to start recording', err);
-    }
+  //     console.log('Recording started');
+  //   } catch (err) {
+  //     console.error('Failed to start recording', err);
+  //   }
+  // };
+
+  // const stopRecording = async () => {
+  //   console.log('Stopping recording..');
+
+  //   setRecording(undefined);
+  //   setIsRecording(false);
+
+  //   await recording.stopAndUnloadAsync();
+  //   await Audio.setAudioModeAsync({
+  //     allowsRecordingIOS: false,
+  //   });
+  //   setRecordingURI(recording.getURI());
+  //   const uri = recording.getURI();
+
+  //   console.log('Recording stopped and stored at', uri);
+  // };
+
+  // const handleAudioSend = async () => {
+  //   const emergency_id = await AsyncStorage.getItem('@emergency-id');
+
+  //   const data = {
+  //     emergencyId: emergency_id,
+  //     audio: recordingURI,
+  //   };
+
+  //   try {
+  //     await axios.post(
+  //       `${BACKEND_SERVER_IP}/api/emergency/audio`,
+  //       JSON.stringify({ data }),
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: 'Bearer ' + token,
+  //         },
+  //       }
+  //     );
+
+  //     window.alert(
+  //       'audio sent to your paramedic. please take care of your loved ones. The ambulance will be there as soon as possible'
+  //     );
+  //   } catch (error) {
+  //     window.alert('Failed to send audio to server', err);
+  //   }
+  // };
+
+  const [chatVisible, setChatVisible] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [ws, setWs] = useState(null);
+
+  const handleChatOpen = () => {
+    setChatVisible(true);
   };
 
-  const stopRecording = async () => {
-    console.log('Stopping recording..');
-
-    setRecording(undefined);
-    setIsRecording(false);
-
-    await recording.stopAndUnloadAsync();
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-    });
-    setRecordingURI(recording.getURI());
-    const uri = recording.getURI();
-
-    console.log('Recording stopped and stored at', uri);
+  const handleChatClose = () => {
+    setChatVisible(false);
   };
 
-  const handleAudioSend = async () => {
-    const emergency_id = await AsyncStorage.getItem('@emergency-id');
-
-    const data = {
-      emergencyId: emergency_id,
-      audio: recordingURI,
-    };
-
-    try {
-      await axios.post(
-        `${BACKEND_SERVER_IP}/api/emergency/audio`,
-        JSON.stringify({ data }),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token,
-          },
-        }
-      );
-
-      window.alert(
-        'audio sent to your paramedic. please take care of your loved ones. The ambulance will be there as soon as possible'
-      );
-    } catch (error) {
-      window.alert('Failed to send audio to server', err);
+  const handleChatSend = (message) => {
+    if (ws) {
+      ws.send(JSON.stringify(message));
     }
   };
 
@@ -131,6 +151,26 @@ const TrackAmbulanceScreen = ({}) => {
     });
 
     // get driver location from ambulance client
+
+    // establish websocket connection
+    const ws = new WebSocket(`ws://${BACKEND_SERVER_IP}/websocket`);
+
+    ws.addEventListener('open', () => {
+      console.log('WebSocket connection established.');
+    });
+
+    ws.addEventListener('message', (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'chat') {
+        setChatMessages((messages) => [...messages, message]);
+      }
+    });
+
+    setWs(ws);
+
+    return () => {
+      ws.close();
+    };
   }, []);
 
   // TODO: make dynamic
@@ -183,8 +223,7 @@ const TrackAmbulanceScreen = ({}) => {
         />
       </MapView>
 
-      {/* TODO: change to record when press button. once recording done. send button. if no recording say, record something. on recording add animation */}
-      {/* TODO: instead of audio, do a proper input with text/audio/photo. send directly to driver, create a mini chat app inside */}
+      {/* TODO: instead of audio, do a proper input with text/audio/photo. send directly to driver, create a mini chat app inside
       <View style={styles.audioContainer}>
         <Text styles={styles.audioContainerText}>
           Please record a quick voice note about the patient's condition for
@@ -208,6 +247,22 @@ const TrackAmbulanceScreen = ({}) => {
         >
           <Text style={styles.sendBtnText}>Send</Text>
         </TouchableOpacity>
+      </View> */}
+
+      <View style={styles.audioContainer}>
+        <TouchableOpacity onPress={handleChatOpen}>
+          <Text>Open chat</Text>
+        </TouchableOpacity>
+
+        <ChatPopup
+          visible={chatVisible}
+          onClose={handleChatClose}
+          onSend={handleChatSend}
+        />
+
+        {chatMessages.map((message, index) => (
+          <Text key={index}>{message.text}</Text>
+        ))}
       </View>
     </View>
   );
