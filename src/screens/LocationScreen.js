@@ -42,18 +42,6 @@ const LocationScreen = ({ navigation }) => {
     setLocation({ latitude: lat, longitude: lng });
   };
 
-  // const handleClearLocation = () => {
-  //     setLocation({ latitude: null, longitude: null });
-  // };
-
-  // const getLocation = async () => {
-  //     let { status } = await Location.requestBackgroundPermissionsAsync();
-  //     if (status !== 'granted') {
-  //         window.alert('Permission to access location was denied');
-  //         return;
-  //     }
-  // }
-
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();

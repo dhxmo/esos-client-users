@@ -45,6 +45,8 @@ const TrackAmbulanceScreen = ({}) => {
   const [recording, setRecording] = useState(null);
   const [recordingURI, setRecordingURI] = useState('');
 
+  const [userPhone, setUserPhone] = useState('');
+
   const handleTextChange = (value) => {
     setText(value);
   };
@@ -83,9 +85,6 @@ const TrackAmbulanceScreen = ({}) => {
       console.log('Starting recording..');
 
       setIsRecording(true);
-      // const { recording } = await Audio.Recording.createAsync(
-      //   Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-      // );
 
       const newRecording = new Audio.Recording();
       await newRecording.prepareToRecordAsync(
@@ -115,6 +114,7 @@ const TrackAmbulanceScreen = ({}) => {
     setRecordingURI(uri);
   };
 
+  //  TODO: this is going to require changes. figure out codec
   const handleSend = async () => {
     const response = await fetch(recordingURI);
     const arrayBuffer = await response.arrayBuffer();
@@ -142,6 +142,9 @@ const TrackAmbulanceScreen = ({}) => {
 
   useEffect(() => {
     (async () => {
+      const phone = await AsyncStorage.getItem('@userPhone');
+      setUserPhone(phone);
+
       const destinationLocation = await AsyncStorage.getItem('@location');
 
       const destinationLocationParsed = JSON.parse(destinationLocation);
@@ -184,7 +187,7 @@ const TrackAmbulanceScreen = ({}) => {
           }
           setChatMessages((messages) => [...messages, message]);
           break;
-        case 'locationUpdate':
+        case 'emergencyLocationUpdate':
           setAmbulanceLocation({
             longitude: message.longitude,
             latitude: message.latitude,
@@ -253,6 +256,7 @@ const TrackAmbulanceScreen = ({}) => {
       </MapView>
 
       <View style={styles.chatContainer}>
+        {/* TODO: if message.phoneNumber === senderPhone, display on right side */}
         <ScrollView style={styles.chatsContainer}>
           {chatMessages.map((message, index) => (
             <View style={styles.msgContainer} key={index}>
