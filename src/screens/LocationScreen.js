@@ -18,11 +18,17 @@ import { mapStyle } from '../globals/mapStyle';
 import { btn } from '../globals/style';
 import { GOOGLE_MAPS_API } from '../config/variables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 navigator.geolocation = require('react-native-geolocation-service');
 
 const LocationScreen = ({ navigation }) => {
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    { label: 'For You', value: 'For You' },
+    { label: 'For Someone', value: 'For Someone' },
+  ]);
+
   const [selectedOption, setSelectedOption] = useState('For You');
 
   const [location, setLocation] = useState({
@@ -108,37 +114,24 @@ const LocationScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.locationContainer}>
-        <TouchableOpacity
-          style={styles.dropdownButton}
-          onPress={() => setIsDropdownVisible(true)}
-        >
-          <Text style={styles.dropdownButtonText}>{selectedOption}</Text>
-        </TouchableOpacity>
-        <Modal
-          visible={isDropdownVisible}
-          animationType="slide"
-          transparent={true}
-        >
-          <TouchableOpacity
-            style={styles.modalOverlay}
-            onPress={() => setIsDropdownVisible(false)}
-          >
-            <View style={styles.modalContent}>
-              <TouchableOpacity
-                style={styles.modalOption}
-                onPress={() => handleOptionSelect('For You')}
-              >
-                <Text style={styles.modalOptionText}>For You</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalOption}
-                onPress={() => handleOptionSelect('For Someone')}
-              >
-                <Text style={styles.modalOptionText}>For Someone</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        </Modal>
+        <View style={styles.dropDownContainerStyle}>
+          <DropDownPicker
+            open={open}
+            setOpen={setOpen}
+            items={items}
+            setItems={setItems}
+            zIndex={2000}
+            value={selectedOption}
+            setValue={setSelectedOption}
+            containerStyle={{ height: 40 }}
+            style={styles.dropDown}
+            itemStyle={{
+              justifyContent: 'flex-start',
+            }}
+            dropDownContainerStyle={styles.dropDownStyleContainer}
+          />
+        </View>
+
         {/* TODO: select location properly and update map location on address selection*/}
         <View
           style={
@@ -291,7 +284,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-
+  dropDownContainerStyle: {
+    marginTop: 70,
+    marginBottom: 70,
+  },
+  dropDown: {
+    width: '40%',
+    marginVertical: 20,
+  },
+  dropDownStyleContainer: {
+    width: '40%',
+    marginBottom: 30,
+  },
   dropdownButton: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,

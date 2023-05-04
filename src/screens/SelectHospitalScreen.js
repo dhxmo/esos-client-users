@@ -147,7 +147,6 @@ const SelectHospitalScreen = ({ navigation }) => {
               }}
               dropDownContainerStyle={styles.dropDownStyleContainer}
             />
-            console.log(hospitalID);
           </TouchableOpacity>
         )}
 

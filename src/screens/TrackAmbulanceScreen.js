@@ -116,17 +116,17 @@ const TrackAmbulanceScreen = ({}) => {
 
   //  TODO: this is going to require changes. figure out codec
   const handleSend = async () => {
-    const response = await fetch(recordingURI);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBlob = new Blob([arrayBuffer], { type: 'audio/3gpp' });
+    // const response = await fetch(recordingURI);
+    // const arrayBuffer = await response.arrayBuffer();
+    // const audioBlob = new Blob([arrayBuffer], { type: 'audio/3gpp' });
 
     const message = {
       type: 'chat',
       text,
-      recording: {
-        uri: recordingURI,
-        blob: audioBlob,
-      },
+      // recording: {
+      //   uri: recordingURI,
+      //   blob: audioBlob,
+      // },
     };
 
     if (ws) {
