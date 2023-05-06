@@ -5,6 +5,8 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Modal,
+  FlatList,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import cross from '../../assets/redCross.png';
@@ -23,10 +25,8 @@ const SELECTED_TYPE = {
 const SelectHospitalScreen = ({ navigation }) => {
   const [selected, setSelected] = useState('');
 
-  const [open, setOpen] = useState(false);
   const [hospitalID, setHospitalID] = useState('');
-
-  const [items, setItems] = useState([]);
+  const [hospitals, setHospitals] = useState([]);
 
   const handleSelect = (value) => {
     if (value === SELECTED_TYPE.CLOSEST) {
@@ -37,14 +37,14 @@ const SelectHospitalScreen = ({ navigation }) => {
   };
 
   const findSpecificHospitals = async () => {
-    let hospitals = [];
-    try {
-      const token = await AsyncStorage.getItem('@sessionToken');
-      const city = await AsyncStorage.getItem('@city');
+    let hospitalsList = [];
 
+    const token = await AsyncStorage.getItem('@sessionToken');
+    const city = await AsyncStorage.getItem('@city');
+
+    try {
       const res = await axios.get(
-        `${BACKEND_SERVER_IP}/api/hospitals/get-all-available`,
-        JSON.stringify(city),
+        `${BACKEND_SERVER_IP}/api/hospital/get-all-available/${city}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -53,15 +53,14 @@ const SelectHospitalScreen = ({ navigation }) => {
         }
       );
 
-      const listOfAvailableHospitals = res.message;
+      const listOfAvailableHospitals = res.data.message;
       for (let i = 0; i < listOfAvailableHospitals.length; i++) {
-        hospitals.push({
-          label: listOfAvailableHospitals[i].name,
-          value: listOfAvailableHospitals[i]._id,
+        hospitalsList.push({
+          name: listOfAvailableHospitals[i].name,
+          id: listOfAvailableHospitals[i]._id,
         });
       }
-
-      setItems(hospitals);
+      setHospitals(hospitalsList);
 
       return true;
     } catch (error) {
@@ -70,14 +69,26 @@ const SelectHospitalScreen = ({ navigation }) => {
     }
   };
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const renderHospital = ({ item }) => (
+    <TouchableOpacity
+      style={styles.hospital}
+      onPress={() => {
+        setHospitalID(item.id);
+        setModalVisible(false);
+      }}
+    >
+      <Text>{item.name}</Text>
+    </TouchableOpacity>
+  );
+
   const handleHospitalSelection = async () => {
     try {
-      if (value === SELECTED_TYPE.CLOSEST) {
-        await AsyncStorage.setItem('@closestHospital?', true);
-      } else if (value === SELECTED_TYPE.SPECIFIC) {
-        await AsyncStorage.setItem('@closestHospital?', false);
+      if (selected === SELECTED_TYPE.CLOSEST) {
+        await AsyncStorage.setItem('@closestHospital?', 'true');
+      } else if (selected === SELECTED_TYPE.SPECIFIC) {
+        await AsyncStorage.setItem('@closestHospital?', 'false');
         await AsyncStorage.setItem('@hospitalID', hospitalID);
-        // find id from list of items and store in async storage
       }
       return true;
     } catch (err) {
@@ -126,38 +137,42 @@ const SelectHospitalScreen = ({ navigation }) => {
           onPress={async () => {
             handleSelect(SELECTED_TYPE.SPECIFIC);
             await findSpecificHospitals();
+            setModalVisible(true);
           }}
         >
-          <Text style={styles.buttonText}>select specific hospital</Text>
+          <Text style={styles.buttonText}>Select specific hospital</Text>
         </TouchableOpacity>
-        {selected === 'specific' && (
-          <TouchableOpacity>
-            <DropDownPicker
-              open={open}
-              setOpen={setOpen}
-              items={items}
-              setItems={setItems}
-              zIndex={2000}
-              value={hospitalID}
-              setValue={setHospitalID}
-              containerStyle={{ height: 40 }}
-              style={styles.dropDown}
-              itemStyle={{
-                justifyContent: 'flex-start',
-              }}
-              dropDownContainerStyle={styles.dropDownStyleContainer}
-            />
+
+        <Modal
+          visible={modalVisible}
+          animationType="slide"
+          style={styles.modalContainer}
+        >
+          <TouchableOpacity
+            style={styles.modalHeader}
+            onPress={() => setModalVisible(false)}
+          >
+            <Text style={styles.modalHeaderText}>Close</Text>
           </TouchableOpacity>
+          <FlatList
+            data={hospitals}
+            renderItem={renderHospital}
+            keyExtractor={(item) => item._id}
+          />
+        </Modal>
+        {hospitalID && (
+          <Text style={styles.selectedHospitalText}>
+            Selected hospital: {hospitals.find((h) => h.id === hospitalID).name}
+          </Text>
         )}
 
         <TouchableOpacity
           style={styles.button2}
           onPress={async () => {
-            // const go = await handleHospitalSelection();
-            // if (go) {
-            //   navigation.navigate('order-ambulance');
-            // }
-            navigation.navigate('order-ambulance');
+            const go = await handleHospitalSelection();
+            if (go) {
+              navigation.navigate('order-ambulance');
+            }
           }}
         >
           <Text style={styles.button2Text}>confirm hospital</Text>
@@ -233,21 +248,41 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   button2: {
-    height: 160,
-    width: 160,
+    height: 120,
+    width: 120,
     backgroundColor: colors.red,
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
     marginHorizontal: 10,
-    marginTop: 50,
+    marginTop: 90,
     padding: 10,
     elevation: 20,
   },
   button2Text: {
     color: colors.white,
     fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalHeader: {
+    backgroundColor: '#eee',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  modalHeaderText: {
+    fontWeight: 'bold',
+  },
+  hospital: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  selectedHospitalText: {
+    marginTop: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
   },
