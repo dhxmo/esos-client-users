@@ -44,7 +44,7 @@ const SelectHospitalScreen = ({ navigation }) => {
 
     try {
       const res = await axios.get(
-        `${BACKEND_SERVER_IP}/api/hospital/get-all-available/${city}`,
+        `https://${BACKEND_SERVER_IP}/api/hospital/get-all-available/${city}`,
         {
           headers: {
             'Content-Type': 'application/json',

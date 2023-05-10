@@ -16,21 +16,12 @@ import MapViewDirections from 'react-native-maps-directions';
 import { BACKEND_SERVER_IP, GOOGLE_MAPS_API } from '../config/variables';
 import { colors } from '../globals/style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Audio } from 'expo-av';
-import { RecordingPlay } from '../components/RecordingPlay';
-import * as FileSystem from 'expo-file-system';
-// import axios from 'axios';
-// import { readAsArrayBuffer } from 'file-reader';
-// import 'blob-polyfill';
-// import readFiles from 'file-reader';
+import * as Linking from 'expo-linking';
 
 const locationMarker = require('../../assets/location.png');
 const ambulanceMarker = require('../../assets/ambulance.png');
-const mic = require('../../assets/mic.png');
-const stop = require('../../assets/stop.png');
-const send = require('../../assets/send.png');
 
-const TrackAmbulanceScreen = ({ }) => {
+const TrackAmbulanceScreen = ({}) => {
   const [patientLocation, setPatientLocation] = useState({
     latitude: null,
     longitude: null,
@@ -41,36 +32,9 @@ const TrackAmbulanceScreen = ({ }) => {
   });
   const [loading, setLoading] = useState(true);
 
-  const [chatMessages, setChatMessages] = useState([]);
   const [ws, setWs] = useState(null);
 
-  const [text, setText] = useState('');
-
   const [driverPhone, setDriverPhone] = useState('');
-
-  const handleTextChange = (value) => {
-    setText(value);
-  };
-
-  //  TODO: this is going to require changes. figure out codec
-  const handleSend = async () => {
-    const phone = await AsyncStorage.getItem('@driverPhone');
-    setDriverPhone(phone);
-
-    const message = {
-      recipientPhone: driverPhone,
-      type: 'chat',
-      text,
-    };
-
-    if (ws) {
-      ws.send(JSON.stringify(message));
-    }
-
-    setChatMessages([...chatMessages, message]);
-
-    setText('');
-  };
 
   useEffect(() => {
     (async () => {
@@ -97,22 +61,17 @@ const TrackAmbulanceScreen = ({ }) => {
       setLoading(false);
     })();
 
-    // establish websocket connection
-    const ws = new WebSocket(`ws://${BACKEND_SERVER_IP}/websocket`);
+    const ws = new WebSocket(`wss://${BACKEND_SERVER_IP}/websocket`);
 
     ws.addEventListener('open', () => {
       console.log('WebSocket connection established.');
     });
 
-    // TODO: websocket send chats
-    // TODO: fix this and test back n forth chats being passed as well as the audio blob
+    // TODO: fix message on connection establish. currently defaulting
     ws.addEventListener('message', (event) => {
       const message = JSON.parse(event.data);
       switch (message.type) {
-        case 'chat':
-          setChatMessages((messages) => [...messages, message]);
-          break;
-        case 'emergencyLocationUpdate':
+        case 'locationUpdate':
           setAmbulanceLocation({
             longitude: message.longitude,
             latitude: message.latitude,
@@ -124,6 +83,9 @@ const TrackAmbulanceScreen = ({ }) => {
     });
 
     setWs(ws);
+
+    // TODO: update from async storage
+    setDriverPhone('111111111');
 
     return () => {
       ws.close();
@@ -140,6 +102,19 @@ const TrackAmbulanceScreen = ({ }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.chatContainer}>
+        {driverPhone && (
+          <View style={styles.phoneNumberContainer}>
+            <Text>Your ambulance phone number:</Text>
+            <TouchableOpacity
+              onPress={async () => await Linking.openURL(`tel:${driverPhone}`)}
+            >
+              <Text style={styles.phoneNumber}> {driverPhone}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
@@ -179,46 +154,6 @@ const TrackAmbulanceScreen = ({ }) => {
           strokeColor={colors.red}
         />
       </MapView>
-
-      <View style={styles.chatContainer}>
-        {/* TODO: if message.recipientPhone === driverPhone, display on right side */}
-        <ScrollView style={styles.chatsContainer}>
-          {chatMessages.map((message, index) => (
-            <View style={styles.msgContainer} key={index}>
-              <Text style={styles.msgText}>{message.text}</Text>
-            </View>
-          ))}
-        </ScrollView>
-
-        {isRecording && <Text>recording...</Text>}
-
-        <View style={styles.inputContainerWrapper}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              placeholder="enter text here..."
-              style={styles.input}
-              value={text}
-              onChangeText={handleTextChange}
-            />
-
-            {!isRecording && (
-              <TouchableOpacity onPress={handleAudioRecord}>
-                <Image source={mic} style={styles.icon} />
-              </TouchableOpacity>
-            )}
-
-            {isRecording && (
-              <TouchableOpacity onPress={handleAudioStop}>
-                <Image source={stop} style={styles.icon} />
-              </TouchableOpacity>
-            )}
-
-            <TouchableOpacity onPress={handleSend}>
-              <Image source={send} style={styles.icon} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
     </View>
   );
 };
@@ -305,33 +240,34 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   chatContainer: {
-    height: (1 / 3) * SCREEN_HEIGHT,
+    height: 200,
     marginVertical: 10,
     width: SCREEN_WIDTH,
     flexDirection: 'column',
     alignItems: 'center',
+    paddingTop: 100,
   },
-  chatsContainer: {
-    height: 150,
-    width: '80%',
-    padding: 5,
-    backgroundColor: colors.white,
-  },
-  msgContainer: {
-    backgroundColor: colors.grey6,
-    borderRadius: 20,
-    padding: 10,
-    marginBottom: 10,
-    maxWidth: '70%',
-  },
-  msgText: {
-    color: colors.red,
-    fontSize: 25,
-    marginVertical: 5,
-  },
-  chatInput: {
-    flexDirection: 'row',
-  },
+  // chatsContainer: {
+  //   height: 100,
+  //   width: '80%',
+  //   padding: 5,
+  //   backgroundColor: colors.white,
+  // },
+  // msgContainer: {
+  //   backgroundColor: colors.grey6,
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   marginBottom: 10,
+  //   maxWidth: '70%',
+  // },
+  // msgText: {
+  //   color: colors.red,
+  //   fontSize: 25,
+  //   marginVertical: 5,
+  // },
+  // chatInput: {
+  //   flexDirection: 'row',
+  // },
   icon: {
     width: 24,
     height: 24,
@@ -363,5 +299,13 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
+  },
+  phoneNumberContainer: {
+    flexDirection: 'column',
+  },
+  phoneNumber: {
+    marginTop: 20,
+    fontSize: 30,
+    color: colors.red,
   },
 });

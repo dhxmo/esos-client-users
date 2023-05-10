@@ -80,7 +80,7 @@ const OrderAmbulanceScreen = ({ navigation }) => {
 
         // TODO: return emergency request id here
         const res = await axios.post(
-          `${BACKEND_SERVER_IP}/api/emergency/create`,
+          `http://${BACKEND_SERVER_IP}/api/emergency/create`,
           JSON.stringify({ data }),
           {
             headers: {

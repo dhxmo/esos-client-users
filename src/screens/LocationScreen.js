@@ -60,8 +60,8 @@ const LocationScreen = ({ navigation }) => {
       let loc = null;
       while (loc === null) {
         loc = await Location.getCurrentPositionAsync({
-          enableHighAccuracy: true,
-          accuracy: Location.Accuracy.Highest,
+          accuracy: Location.Accuracy.BestForNavigation,
+          timeInterval: 1000,
         });
         if (loc.coords.latitude && loc.coords.longitude) {
           const address = await Location.reverseGeocodeAsync(loc.coords);
@@ -101,6 +101,8 @@ const LocationScreen = ({ navigation }) => {
     );
   }
 
+  // TODO: For You - drop pin to move to correct location for accurate location
+  //  TODO: For Someone - select location properly and update map location on address selection
   return (
     <View style={styles.container}>
       <View style={styles.backIcon}>
@@ -131,8 +133,6 @@ const LocationScreen = ({ navigation }) => {
           />
         </View>
 
-        {/* TODO: For You - drop pin to move to correct location for accurate location */}
-        {/* TODO: For Someone - select location properly and update map location on address selection*/}
         <View
           style={
             selectedOption === 'For You'

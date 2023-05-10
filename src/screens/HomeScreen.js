@@ -30,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
   const handleSendOTP = async () => {
     try {
       await axios.post(
-        `${BACKEND_SERVER_IP}/api/user/send-otp`,
+        `http://${BACKEND_SERVER_IP}/api/user/send-otp`,
         JSON.stringify({ phoneNumber }),
         {
           headers: {
@@ -49,7 +49,7 @@ const HomeScreen = ({ navigation }) => {
   const handleVerifyOTP = async () => {
     try {
       const response = await axios.post(
-        `${BACKEND_SERVER_IP}/api/user/verify-otp`,
+        `http://${BACKEND_SERVER_IP}/api/user/verify-otp`,
         JSON.stringify({
           phoneNumber,
           otp: OTP,
