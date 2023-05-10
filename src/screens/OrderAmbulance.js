@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import cross from '../../assets/redCross.png';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -22,11 +22,6 @@ const SUPPORT_TYPE = {
 };
 
 const OrderAmbulanceScreen = ({ navigation }) => {
-  const [location, setLocation] = useState({
-    latitude: null,
-    longitude: null,
-  });
-
   const [selected, setSelected] = useState({
     selectedType: null,
     emergency: false,
@@ -78,9 +73,8 @@ const OrderAmbulanceScreen = ({ navigation }) => {
           };
         }
 
-        // TODO: return emergency request id here
         const res = await axios.post(
-          `http://${BACKEND_SERVER_IP}/api/emergency/create`,
+          `https://${BACKEND_SERVER_IP}/api/emergency/create`,
           JSON.stringify({ data }),
           {
             headers: {
@@ -90,10 +84,11 @@ const OrderAmbulanceScreen = ({ navigation }) => {
           }
         );
 
+        // TODO: check this is correct -->
         await AsyncStorage.setItem('@emergency-id', res.data.message._id);
         await AsyncStorage.setItem(
           '@driverPhone',
-          res.data.message.assugnedDriver
+          res.data.message.assignedDriver
         );
 
         window.alert('Searching for the closest Ambulance');

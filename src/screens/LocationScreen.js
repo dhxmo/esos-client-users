@@ -49,6 +49,7 @@ const LocationScreen = ({ navigation }) => {
     setLocation({ latitude: lat, longitude: lng });
   };
 
+  // TODO: fix this to be accurate. accuracy is paramount here
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -214,8 +215,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     borderColor: colors.red,
     height: SCREEN_HEIGHT / 4,
-    // width: 350,
-    // backgroundColor: colors.red,
     zIndex: 4,
     paddingBottom: 10,
   },

@@ -247,27 +247,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 100,
   },
-  // chatsContainer: {
-  //   height: 100,
-  //   width: '80%',
-  //   padding: 5,
-  //   backgroundColor: colors.white,
-  // },
-  // msgContainer: {
-  //   backgroundColor: colors.grey6,
-  //   borderRadius: 20,
-  //   padding: 10,
-  //   marginBottom: 10,
-  //   maxWidth: '70%',
-  // },
-  // msgText: {
-  //   color: colors.red,
-  //   fontSize: 25,
-  //   marginVertical: 5,
-  // },
-  // chatInput: {
-  //   flexDirection: 'row',
-  // },
   icon: {
     width: 24,
     height: 24,

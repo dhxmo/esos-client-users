@@ -8,11 +8,10 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import cross from '../../assets/redCross.png';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { parameters, colors } from '../globals/style';
-import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BACKEND_SERVER_IP } from '../config/variables';
