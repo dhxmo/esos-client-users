@@ -38,11 +38,12 @@ const LocationScreen = ({ navigation }) => {
 
   const [loading, setLoading] = useState(true);
 
-  const handleOptionSelect = (option) => {
-    setSelectedOption(option);
-    setIsDropdownVisible(false);
-  };
+  // const handleOptionSelect = (option) => {
+  //   setSelectedOption(option);
+  //   setIsDropdownVisible(false);
+  // };
 
+  // TODO: fix the for someone location fix and map update
   const handleLocationSelect = (_, details) => {
     const { lat, lng } = details.geometry.location;
     setLocation({ latitude: lat, longitude: lng });
@@ -100,8 +101,6 @@ const LocationScreen = ({ navigation }) => {
     );
   }
 
-  // TODO: add support for own or other location
-  // if pick other, update location to that specific geolocation lat/long
   return (
     <View style={styles.container}>
       <View style={styles.backIcon}>
@@ -132,7 +131,8 @@ const LocationScreen = ({ navigation }) => {
           />
         </View>
 
-        {/* TODO: select location properly and update map location on address selection*/}
+        {/* TODO: For You - drop pin to move to correct location for accurate location */}
+        {/* TODO: For Someone - select location properly and update map location on address selection*/}
         <View
           style={
             selectedOption === 'For You'

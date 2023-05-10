@@ -18,6 +18,11 @@ import { colors } from '../globals/style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { RecordingPlay } from '../components/RecordingPlay';
+import * as FileSystem from 'expo-file-system';
+// import axios from 'axios';
+// import { readAsArrayBuffer } from 'file-reader';
+// import 'blob-polyfill';
+// import readFiles from 'file-reader';
 
 const locationMarker = require('../../assets/location.png');
 const ambulanceMarker = require('../../assets/ambulance.png');
@@ -25,7 +30,7 @@ const mic = require('../../assets/mic.png');
 const stop = require('../../assets/stop.png');
 const send = require('../../assets/send.png');
 
-const TrackAmbulanceScreen = ({}) => {
+const TrackAmbulanceScreen = ({ }) => {
   const [patientLocation, setPatientLocation] = useState({
     latitude: null,
     longitude: null,
@@ -41,92 +46,21 @@ const TrackAmbulanceScreen = ({}) => {
 
   const [text, setText] = useState('');
 
-  const [isRecording, setIsRecording] = useState(false);
-  const [recording, setRecording] = useState(null);
-  const [recordingURI, setRecordingURI] = useState('');
-
-  const [userPhone, setUserPhone] = useState('');
+  const [driverPhone, setDriverPhone] = useState('');
 
   const handleTextChange = (value) => {
     setText(value);
   };
 
-  const recordingOptions = {
-    android: {
-      extension: '.m4a',
-      outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-      audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
-      sampleRate: 44100,
-      numberOfChannels: 2,
-      bitRate: 128000,
-      maxDuration: 60, // set max duration to 60 seconds
-    },
-    ios: {
-      extension: '.caf',
-      audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
-      sampleRate: 44100,
-      numberOfChannels: 2,
-      bitRate: 128000,
-      linearPCMBitDepth: 16,
-      linearPCMIsBigEndian: false,
-      linearPCMIsFloat: false,
-      maxDuration: 60, // set max duration to 60 seconds
-    },
-  };
-
-  const handleAudioRecord = async () => {
-    try {
-      console.log('Requesting permissions..');
-      await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-      console.log('Starting recording..');
-
-      setIsRecording(true);
-
-      const newRecording = new Audio.Recording();
-      await newRecording.prepareToRecordAsync(
-        recordingOptions
-        // Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-      );
-      await newRecording.startAsync();
-      setRecording(newRecording);
-
-      console.log('Recording started');
-    } catch (err) {
-      console.error('Failed to start recording', err);
-    }
-  };
-
-  const handleAudioStop = async () => {
-    console.log('Stopping recording..');
-    setRecording(null);
-    setIsRecording(false);
-
-    await recording.stopAndUnloadAsync();
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-    });
-
-    const uri = recording.getURI();
-    setRecordingURI(uri);
-  };
-
   //  TODO: this is going to require changes. figure out codec
   const handleSend = async () => {
-    // const response = await fetch(recordingURI);
-    // const arrayBuffer = await response.arrayBuffer();
-    // const audioBlob = new Blob([arrayBuffer], { type: 'audio/3gpp' });
+    const phone = await AsyncStorage.getItem('@driverPhone');
+    setDriverPhone(phone);
 
     const message = {
+      recipientPhone: driverPhone,
       type: 'chat',
       text,
-      // recording: {
-      //   uri: recordingURI,
-      //   blob: audioBlob,
-      // },
     };
 
     if (ws) {
@@ -136,15 +70,10 @@ const TrackAmbulanceScreen = ({}) => {
     setChatMessages([...chatMessages, message]);
 
     setText('');
-    setRecording(null);
-    setRecordingURI('');
   };
 
   useEffect(() => {
     (async () => {
-      const phone = await AsyncStorage.getItem('@userPhone');
-      setUserPhone(phone);
-
       const destinationLocation = await AsyncStorage.getItem('@location');
 
       const destinationLocationParsed = JSON.parse(destinationLocation);
@@ -181,10 +110,6 @@ const TrackAmbulanceScreen = ({}) => {
       const message = JSON.parse(event.data);
       switch (message.type) {
         case 'chat':
-          if (message.recording && message.recording.blob) {
-            const audioData = URL.createObjectURL(message.recording.blob);
-            message.recording.data = audioData;
-          }
           setChatMessages((messages) => [...messages, message]);
           break;
         case 'emergencyLocationUpdate':
@@ -256,15 +181,11 @@ const TrackAmbulanceScreen = ({}) => {
       </MapView>
 
       <View style={styles.chatContainer}>
-        {/* TODO: if message.phoneNumber === senderPhone, display on right side */}
+        {/* TODO: if message.recipientPhone === driverPhone, display on right side */}
         <ScrollView style={styles.chatsContainer}>
           {chatMessages.map((message, index) => (
             <View style={styles.msgContainer} key={index}>
-              {message.recording?.uri ? (
-                <RecordingPlay uri={message.recording} />
-              ) : (
-                <Text style={styles.msgText}>{message.text}</Text>
-              )}
+              <Text style={styles.msgText}>{message.text}</Text>
             </View>
           ))}
         </ScrollView>

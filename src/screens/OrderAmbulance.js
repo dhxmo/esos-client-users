@@ -81,7 +81,7 @@ const OrderAmbulanceScreen = ({ navigation }) => {
         // TODO: return emergency request id here
         const res = await axios.post(
           `${BACKEND_SERVER_IP}/api/emergency/create`,
-          JSON.stringify(data),
+          JSON.stringify({ data }),
           {
             headers: {
               'Content-Type': 'application/json',
@@ -91,6 +91,10 @@ const OrderAmbulanceScreen = ({ navigation }) => {
         );
 
         await AsyncStorage.setItem('@emergency-id', res.data.message._id);
+        await AsyncStorage.setItem(
+          '@driverPhone',
+          res.data.message.assugnedDriver
+        );
 
         window.alert('Searching for the closest Ambulance');
 

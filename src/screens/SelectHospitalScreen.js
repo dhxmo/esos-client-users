@@ -157,7 +157,7 @@ const SelectHospitalScreen = ({ navigation }) => {
           <FlatList
             data={hospitals}
             renderItem={renderHospital}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item) => item.id}
           />
         </Modal>
         {hospitalID && (
