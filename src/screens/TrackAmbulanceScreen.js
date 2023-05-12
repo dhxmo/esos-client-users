@@ -6,8 +6,6 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator,
-  TextInput,
-  ScrollView,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
@@ -38,21 +36,21 @@ const TrackAmbulanceScreen = ({}) => {
 
   useEffect(() => {
     (async () => {
+      const dPhone = await AsyncStorage.getItem('@driverPhone');
+      setDriverPhone(dPhone);
+
       const destinationLocation = await AsyncStorage.getItem('@location');
-
       const destinationLocationParsed = JSON.parse(destinationLocation);
-
       const destination = {
         latitude: destinationLocationParsed['latitude'],
         longitude: destinationLocationParsed['longitude'],
       };
-
       setPatientLocation({
         latitude: destination['latitude'],
         longitude: destination['longitude'],
       });
 
-      // TODO: dummy. make call to websockets and add to array
+      // TODO: remove thisonce ws active -- dummy. make call to websockets and add to array
       setAmbulanceLocation({
         latitude: 12.968868,
         longitude: 77.6812007,
@@ -61,14 +59,14 @@ const TrackAmbulanceScreen = ({}) => {
       setLoading(false);
     })();
 
-    const ws = new WebSocket(`wss://${BACKEND_SERVER_IP}/websocket`);
+    const wss = new WebSocket(`wss://${BACKEND_SERVER_IP}/websocket`);
 
-    ws.addEventListener('open', () => {
+    wss.addEventListener('open', () => {
       console.log('WebSocket connection established.');
     });
 
     // TODO: fix message on connection establish. currently defaulting
-    ws.addEventListener('message', (event) => {
+    wss.addEventListener('message', (event) => {
       const message = JSON.parse(event.data);
       switch (message.type) {
         case 'locationUpdate':
@@ -82,10 +80,7 @@ const TrackAmbulanceScreen = ({}) => {
       }
     });
 
-    setWs(ws);
-
-    // TODO: update from async storage
-    setDriverPhone('111111111');
+    setWs(wss);
 
     return () => {
       ws.close();

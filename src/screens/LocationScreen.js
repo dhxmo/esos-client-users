@@ -4,50 +4,26 @@ import {
   Dimensions,
   TouchableOpacity,
   Text,
-  Modal,
   ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import { colors } from '../globals/style';
 import * as Location from 'expo-location';
 import { mapStyle } from '../globals/mapStyle';
-import { btn } from '../globals/style';
-import { GOOGLE_MAPS_API } from '../config/variables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DropDownPicker from 'react-native-dropdown-picker';
 
 navigator.geolocation = require('react-native-geolocation-service');
 
 const LocationScreen = ({ navigation }) => {
-  const [open, setOpen] = useState(false);
-  const [items, setItems] = useState([
-    { label: 'For You', value: 'For You' },
-    { label: 'For Someone', value: 'For Someone' },
-  ]);
-
-  const [selectedOption, setSelectedOption] = useState('For You');
-
   const [location, setLocation] = useState({
     latitude: null,
     longitude: null,
   });
 
   const [loading, setLoading] = useState(true);
-
-  // const handleOptionSelect = (option) => {
-  //   setSelectedOption(option);
-  //   setIsDropdownVisible(false);
-  // };
-
-  // TODO: fix the for someone location fix and map update
-  const handleLocationSelect = (_, details) => {
-    const { lat, lng } = details.geometry.location;
-    setLocation({ latitude: lat, longitude: lng });
-  };
 
   // TODO: fix this to be accurate. accuracy is paramount here
   useEffect(() => {
@@ -116,51 +92,6 @@ const LocationScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.locationContainer}>
-        <View style={styles.dropDownContainerStyle}>
-          <DropDownPicker
-            open={open}
-            setOpen={setOpen}
-            items={items}
-            setItems={setItems}
-            zIndex={2000}
-            value={selectedOption}
-            setValue={setSelectedOption}
-            containerStyle={{ height: 40 }}
-            style={styles.dropDown}
-            itemStyle={{
-              justifyContent: 'flex-start',
-            }}
-            dropDownContainerStyle={styles.dropDownStyleContainer}
-          />
-        </View>
-
-        <View
-          style={
-            selectedOption === 'For You'
-              ? styles.collapsedAutoComplete
-              : styles.autocompleteContainer
-          }
-        >
-          {selectedOption === 'For Someone' && (
-            <GooglePlacesAutocomplete
-              nearbyPlacesAPI="GooglePlacesSearch"
-              placeholder="Enter location"
-              onPress={handleLocationSelect}
-              listViewDisplayed="auto"
-              debounce={400}
-              minLength={2}
-              enablePoweredByContainer={false}
-              fetchDetails={true}
-              autoFocus={true}
-              query={{
-                key: GOOGLE_MAPS_API,
-                language: 'en',
-              }}
-              styles={autoComplete}
-            />
-          )}
-        </View>
-
         <TouchableOpacity
           onPress={() => {
             const go = handleLocationConfirm();
@@ -168,7 +99,7 @@ const LocationScreen = ({ navigation }) => {
               navigation.navigate('select-hospital');
             }
           }}
-          style={btn}
+          style={styles.confirmBtn}
         >
           <Text style={styles.button1Text}>Confirm Location</Text>
         </TouchableOpacity>
@@ -176,9 +107,7 @@ const LocationScreen = ({ navigation }) => {
       <View>
         <MapView
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-          style={
-            selectedOption === 'For Someone' ? styles.map : styles.biggerMap
-          }
+          style={styles.biggerMap}
           customMapStyle={mapStyle}
           showsUserLocation={true}
           followsUserLocation={true}
@@ -200,6 +129,21 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
+  confirmBtn: {
+    width: 250,
+    height: 70,
+    marginTop: 100,
+    backgroundColor: colors.red,
+    color: 'white',
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 10,
+    margin: 10,
+    marginVertical: 40,
+    padding: 20,
+    zIndex: 100,
+  },
   activityIndicator: {
     alignItems: 'center',
     justifyContent: 'center',

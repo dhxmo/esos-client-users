@@ -108,6 +108,7 @@ module.exports = {
     margin: 10,
     marginVertical: 40,
     padding: 20,
+    zIndex: 100,
   },
   text: {
     color: 'white',
